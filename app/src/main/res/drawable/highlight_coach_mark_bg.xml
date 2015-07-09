@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
+   <solid android:color="@android:color/transparent" />
+   <stroke android:width="2dp" android:color="@color/coach_mark_background"/>
+   <corners android:radius="@dimen/coach_mark_border_radius"/>
+</shape>

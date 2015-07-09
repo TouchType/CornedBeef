@@ -1,0 +1,10 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Coach mark -->
+    <dimen name="coach_mark_border_radius">5dip</dimen>
+    <dimen name="dialog_coach_mark_border_radius">10dip</dimen>
+    <dimen name="dialog_coach_mark_width">300dip</dimen>
+</resources>

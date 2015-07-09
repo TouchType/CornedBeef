@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="coach_mark_background">#28B8CE</color>
+    <color name="dialog_coach_mark_background">#88000000</color>
+    <color name="dialog_coach_mark_divider">#D3D3D3</color>
+</resources>
