@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef.test;
+package com.swiftkey.cornedbeef.test;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
-import uk.co.lachie.cornedbeef.BubbleCoachMark;
-import uk.co.lachie.cornedbeef.CoachMark;
+import com.swiftkey.cornedbeef.BubbleCoachMark;
+import com.swiftkey.cornedbeef.CoachMark;
 
 public class SpamActivity extends Activity {
 

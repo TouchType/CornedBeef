@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef;
+package com.swiftkey.cornedbeef;
 
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -11,8 +11,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import uk.co.lachie.cornedbeef.test.R;
-import uk.co.lachie.cornedbeef.test.SpamActivity;
+import com.swiftkey.cornedbeef.test.R;
+import com.swiftkey.cornedbeef.test.SpamActivity;
 
 public class BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
     

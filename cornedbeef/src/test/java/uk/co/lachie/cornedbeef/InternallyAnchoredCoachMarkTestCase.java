@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef;
+package com.swiftkey.cornedbeef;
 
 import android.content.Context;
 import android.view.View;
@@ -11,7 +11,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static uk.co.lachie.cornedbeef.CoachMark.CoachMarkDimens;
+import static com.swiftkey.cornedbeef.CoachMark.CoachMarkDimens;
 
 @RunWith(RobolectricTestRunner.class)
 public class InternallyAnchoredCoachMarkTestCase {

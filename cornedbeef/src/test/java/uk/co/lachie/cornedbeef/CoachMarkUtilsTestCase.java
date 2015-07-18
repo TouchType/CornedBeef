@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef;
+package com.swiftkey.cornedbeef;
 
 import android.graphics.Point;
 
@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
-import static uk.co.lachie.cornedbeef.CoachMark.CoachMarkDimens;
+import static com.swiftkey.cornedbeef.CoachMark.CoachMarkDimens;
 
 @RunWith(RobolectricTestRunner.class)
 public class CoachMarkUtilsTestCase {

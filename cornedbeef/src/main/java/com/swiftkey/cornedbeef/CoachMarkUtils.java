@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef;
+package com.swiftkey.cornedbeef;
 
 import android.graphics.Point;
 

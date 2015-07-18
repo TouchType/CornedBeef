@@ -1,4 +1,4 @@
-package uk.co.lachie.cornedbeef;
+package com.swiftkey.cornedbeef;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -9,13 +9,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
-import uk.co.lachie.cornedbeef.test.R;
-import uk.co.lachie.cornedbeef.test.SpamActivity;
+import com.swiftkey.cornedbeef.test.R;
+import com.swiftkey.cornedbeef.test.SpamActivity;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.co.lachie.cornedbeef.CoachMark.OnDismissListener;
+import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
 
 public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
     
