@@ -21,7 +21,7 @@ import android.widget.TextView;
  * 
  * CoachMarks are dismissed in two ways: 
  *  1) A pre-set timeout passed 
- *  2) The {@link CoachMark#dismiss(CoachMarkUserResponse response)} method is called
+ *  2) The {@link CoachMark#dismiss()} method is called
  * 
  * Coach marks can be very annoying to the user, SO PLEASE USE SPARINGLY!
  * 
@@ -128,7 +128,7 @@ public abstract class CoachMark {
             @Override
             public void run() {
                 if(mPopup.isShowing()) {
-                    dismiss(CoachMarkUserResponse.TIMEOUT);
+                    dismiss();
                 }
             }
         }, mTimeout);
@@ -144,9 +144,8 @@ public abstract class CoachMark {
 
     /**
      * Dismiss the coach mark and stop listening for changes to the anchor view
-     * @param userResponse  how the coach mark was dismissed
      */
-    public void dismiss(CoachMarkUserResponse userResponse) {
+    public void dismiss() {
         mAnchor.destroyDrawingCache();
         mAnchor.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
         mPopup.dismiss();
@@ -193,7 +192,7 @@ public abstract class CoachMark {
                 updateView(popupDimens, anchorDimens);
                 mPopup.update(popupDimens.x, popupDimens.y, popupDimens.width , popupDimens.height);
             } else {
-                dismiss(CoachMarkUserResponse.OTHER);
+                dismiss();
             }        
             return true;
         }
@@ -203,17 +202,12 @@ public abstract class CoachMark {
      * Listener may be used to dismiss the coach mark when it is touched
      */
     protected class CoachMarkOnTouchListener implements OnTouchListener {
-        private final CoachMarkUserResponse mUserResponse;
-
-        public CoachMarkOnTouchListener(CoachMarkUserResponse userResponse) {
-            mUserResponse = userResponse;
-        }
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
-                dismiss(mUserResponse);
+                dismiss();
             case MotionEvent.ACTION_DOWN:
                 return true;
             default:
@@ -224,7 +218,7 @@ public abstract class CoachMark {
 
     /**
      * An {@link android.view.View.OnClickListener} which wraps an
-     * existing listener with a call to {@link CoachMark#dismiss(CoachMarkUserResponse response)}
+     * existing listener with a call to {@link CoachMark#dismiss()}
      *
      * @author lachie
      *
@@ -232,17 +226,15 @@ public abstract class CoachMark {
     protected class CoachMarkOnClickListener implements View.OnClickListener {
 
         private final View.OnClickListener mListener;
-        private final CoachMarkUserResponse mUserResponse;
 
         public CoachMarkOnClickListener(View.OnClickListener listener,
                 CoachMarkUserResponse userResponse) {
             mListener = listener;
-            mUserResponse = userResponse;
         }
 
         @Override
         public void onClick(View v) {
-            dismiss(mUserResponse);
+            dismiss();
 
             if (mListener != null) {
                 mListener.onClick(v);

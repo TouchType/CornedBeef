@@ -56,8 +56,8 @@ public class SpamActivity extends Activity {
 
     @Override
     public void onDestroy() {
-        mHighlightCoachMark.dismiss(CoachMark.CoachMarkUserResponse.OTHER);
-        mBubbleCoachMark.dismiss(CoachMark.CoachMarkUserResponse.OTHER);
+        mHighlightCoachMark.dismiss();
+        mBubbleCoachMark.dismiss();
         super.onDestroy();
     }
 }

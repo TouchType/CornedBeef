@@ -201,14 +201,14 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     }
     
     /**
-     * Call {@link CoachMark#dismiss(CoachMark.CoachMarkUserResponse)}
+     * Call {@link CoachMark#dismiss()}
      * on the given {@link CoachMark}
      */
     private void dismissCoachMark(final CoachMark coachMark) {
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                coachMark.dismiss(CoachMark.CoachMarkUserResponse.OTHER);
+                coachMark.dismiss();
             }
         });
         getInstrumentation().waitForIdleSync();

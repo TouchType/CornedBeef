@@ -83,7 +83,7 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
                 LayoutParams.WRAP_CONTENT);
         
         popup.setClippingEnabled(false); // We will handle clipping ourselves
-        popup.setTouchInterceptor(new CoachMarkOnTouchListener(CoachMarkUserResponse.NEUTRAL));
+        popup.setTouchInterceptor(new CoachMarkOnTouchListener());
         popup.setTouchable(true);
         return popup;
     }

@@ -14,7 +14,8 @@ import android.widget.TextView;
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
-public class BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
+public class
+        BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
     
     private static final int TIMEOUT = 1000;
     private static final int SLEEP = 100;
@@ -393,14 +394,14 @@ public class BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<Sp
     }
     
     /**
-     * Call {@link CoachMark#dismiss(CoachMark.CoachMarkUserResponse)}
+     * Call {@link CoachMark#dismiss()}
      * on the given {@link CoachMark}
      */
     private void dismissCoachMark(final CoachMark coachMark) {
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                coachMark.dismiss(CoachMark.CoachMarkUserResponse.OTHER);
+                coachMark.dismiss();
             }
         });
         getInstrumentation().waitForIdleSync();
