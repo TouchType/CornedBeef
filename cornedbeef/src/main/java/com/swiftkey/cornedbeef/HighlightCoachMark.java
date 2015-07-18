@@ -46,7 +46,11 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
     }
     
     public static class HighlightCoachMarkBuilder extends InternallyAnchoredCoachMarkBuilder {
-        
+
+        public HighlightCoachMarkBuilder(Context context, View anchor) {
+            super(context, anchor, new String());
+        }
+
         public HighlightCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
         }
