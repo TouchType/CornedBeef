@@ -30,15 +30,6 @@ import android.widget.TextView;
  */
 public abstract class CoachMark {
 
-    // ways the users can respond to the coach marks
-    public enum CoachMarkUserResponse {
-        POSITIVE,
-        NEUTRAL,
-        NEGATIVE,
-        TIMEOUT,
-        OTHER
-    }
-    
     public static final int NO_ANIMATION = 0;
     
     public interface OnDismissListener {
@@ -227,8 +218,7 @@ public abstract class CoachMark {
 
         private final View.OnClickListener mListener;
 
-        public CoachMarkOnClickListener(View.OnClickListener listener,
-                CoachMarkUserResponse userResponse) {
+        public CoachMarkOnClickListener(View.OnClickListener listener) {
             mListener = listener;
         }
 
