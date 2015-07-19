@@ -8,9 +8,6 @@ import android.widget.PopupWindow;
 
 /**
  * Can be used to highlight part, or all of a given 'anchor' view
- *
- * Consider using TrackedHighlightCoachMark if you'd like to track when the
- * coach mark is shown.
  * 
  * @author lachie
  */

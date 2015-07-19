@@ -18,9 +18,6 @@ import android.widget.PopupWindow;
  * positioned off the side of the screen it is shifted left or right
  * accordingly. The pointy mark always points to the same location on the
  * anchor, regardless of the position of the speech bubble.
- *
- * Consider using TrackedBubbleCoachMark if you'd like to track when the
- * coach mark is shown and what the user responses are.
  * 
  * @author lachie
  * 
