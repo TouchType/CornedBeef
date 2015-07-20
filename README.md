@@ -4,13 +4,13 @@ An Android library by for displaying instructional overlays or 'coach marks' tha
 
 Coach marks can be associated with a particular view but are independent of the underlying layout, making it easy to add them to new and existing projects alike. Separation from the standard layout also makes it easier to control where and when overlays are visible, which is particularly useful when coach marks are temporary or context specific.
 
-There are currently two types of pre-built coach mark: [BubbleCoachMark](BubbleCoachMark) and [HighlightCoachMark](HighlightCoachMark).
+There are currently two types of pre-built coach mark: [BubbleCoachMark](#bubble) and [HighlightCoachMark](#highlight).
 
-### BubbleCoachMark
+<a name="bubble">### BubbleCoachMark</a>
 
 A speech bubble that can be configured to point to a particular view, or sub-region within a view. Bubble coach marks can include a simple message or a fully customisable view.
 
-### HighlightCoachMark
+<a name="highlight">### HighlightCoachMark</a>
 
 A thin border around a particular view, or sub-region.
 
