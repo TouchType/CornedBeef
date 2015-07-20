@@ -6,11 +6,11 @@ Coach marks can be associated with a particular view but are independent of the 
 
 There are currently two types of pre-built coach mark: [BubbleCoachMark](#bubble) and [HighlightCoachMark](#highlight).
 
-<a name="bubble">### BubbleCoachMark</a>
+### <a name="bubble">BubbleCoachMark</a>
 
 A speech bubble that can be configured to point to a particular view, or sub-region within a view. Bubble coach marks can include a simple message or a fully customisable view.
 
-<a name="highlight">### HighlightCoachMark</a>
+### <a name="highlight>HighlightCoachMark</a>
 
 A thin border around a particular view, or sub-region.
 
