@@ -1,6 +1,18 @@
-# CornedBeef
+# Float
 
-[Corned Beef](https://en.wikipedia.org/wiki/Corned_beef) - _It's like Spam, but nicer!_
+An Android library by for displaying instructional overlays or 'coach marks' that _float_ above the current window.
+
+Coach marks can be associated with a particular view but are independent of the underlying layout, making it easy to add them to new and existing projects alike. Separation from the standard layout also makes it easier to control where and when overlays are visible, which is particularly useful when coach marks are temporary or context specific.
+
+There are currently two types of pre-built coach mark: [BubbleCoachMark](BubbleCoachMark) and [HighlightCoachMark](HighlightCoachMark).
+
+### BubbleCoachMark
+
+A speech bubble that can be configured to point to a particular view, or sub-region within a view. Bubble coach marks can include a simple message or a fully customisable view.
+
+### HighlightCoachMark
+
+A thin border around a particular view, or sub-region.
 
 ### Building and running the tests
 
@@ -22,3 +34,5 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+Created by [SwiftKey](https://www.swiftkey.com/)
