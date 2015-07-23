@@ -50,6 +50,7 @@ public abstract class CoachMark {
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
     private final long mTimeout;
+    private final int mBackgroundColor;
     
     protected Rect mDisplayFrame;
     
@@ -63,6 +64,7 @@ public abstract class CoachMark {
         mPadding = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, builder.padding, 
                 mContext.getResources().getDisplayMetrics());
+        mBackgroundColor = builder.backgroundColor;
 
         // Create the coach mark view
         View view = createContentView(builder.content);
@@ -159,7 +161,14 @@ public abstract class CoachMark {
     public boolean isShowing() {
         return mPopup.isShowing();
     }
-    
+
+    /**
+     * Get the specified background color
+     */
+    protected int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
     /**
      * Get the visible display size of the window this view is attached to
      */
@@ -264,10 +273,11 @@ public abstract class CoachMark {
         protected int animationStyle = R.style.CoachMarkAnimation;
         protected View tokenView;
         protected OnShowListener showListener;
-        
-        public CoachMarkBuilder(Context context, View anchor, String message) {
+        protected int backgroundColor = Color.WHITE;
+
+        public CoachMarkBuilder(Context context, View anchor, String message, int textColor) {
             this(context, anchor, new TextView(context));
-            ((TextView) content).setTextColor(Color.WHITE);
+            ((TextView) content).setTextColor(textColor);
             ((TextView) content).setText(message);
         }
 
@@ -348,6 +358,17 @@ public abstract class CoachMark {
          */
         public CoachMarkBuilder setOnShowListener(OnShowListener listener) {
             this.showListener = listener;
+            return this;
+        }
+
+        /**
+         * Set the color of the coachmark background
+         *
+         * @param backgroundColor
+         *      the color to use for the background.
+         */
+        public CoachMarkBuilder setBackgroundColor(int backgroundColor) {
+            this.backgroundColor = backgroundColor;
             return this;
         }
 

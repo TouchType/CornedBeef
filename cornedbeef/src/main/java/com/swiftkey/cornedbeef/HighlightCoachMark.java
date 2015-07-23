@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -45,11 +46,11 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
     public static class HighlightCoachMarkBuilder extends InternallyAnchoredCoachMarkBuilder {
 
         public HighlightCoachMarkBuilder(Context context, View anchor) {
-            super(context, anchor, new String());
+            super(context, anchor, "", Color.TRANSPARENT);
         }
 
-        public HighlightCoachMarkBuilder(Context context, View anchor, String message) {
-            super(context, anchor, message);
+        public HighlightCoachMarkBuilder(Context context, View anchor, String message, int textColor) {
+            super(context, anchor, message, textColor);
         }
 
         public HighlightCoachMarkBuilder(Context context, View anchor, View content) {

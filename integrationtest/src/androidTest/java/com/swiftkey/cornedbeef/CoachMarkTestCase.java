@@ -175,7 +175,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         public static class TestCoachMarkBuilder extends CoachMarkBuilder {
 
             public TestCoachMarkBuilder(Context context, View anchor, String text) {
-                super(context, anchor, text);
+                super(context, anchor, text, Color.WHITE);
                 content.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
             }
 

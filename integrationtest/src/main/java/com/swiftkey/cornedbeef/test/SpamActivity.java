@@ -2,6 +2,7 @@ package com.swiftkey.cornedbeef.test;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -25,7 +26,7 @@ public class SpamActivity extends Activity {
         final Context context = getApplicationContext();
         final View view = findViewById(R.id.hello_world);
 
-        mBubbleCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(context, view, "This is a coach mark!")
+        mBubbleCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(context, view, "This is a coach mark!", Color.BLACK)
                 .setTargetOffset(0.25f)
                 .setShowBelowAnchor(true)
                 .setPadding(10)

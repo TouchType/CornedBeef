@@ -35,8 +35,8 @@ public abstract class InternallyAnchoredCoachMark extends CoachMark {
 
     public abstract static class InternallyAnchoredCoachMarkBuilder extends CoachMarkBuilder {
 
-        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, String message) {
-            super(context, anchor, message);
+        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, String message, int textColor) {
+            super(context, anchor, message, textColor);
         }
 
         public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, View content) {
