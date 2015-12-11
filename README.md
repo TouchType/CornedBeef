@@ -1,4 +1,4 @@
-# Float
+# CornedBeef
 
 An Android library by for displaying instructional overlays or 'coach marks' that _float_ above the current window.
 
