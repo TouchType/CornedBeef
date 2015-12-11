@@ -1,4 +1,4 @@
-# Float
+# CornedBeef
 
 An Android library by for displaying instructional overlays or 'coach marks' that _float_ above the current window.
 
@@ -34,6 +34,6 @@ A thin border around a particular view, or sub-region.
     See the License for the specific language governing permissions and
     limitations under the License.
 
--------
+--------
 
 Created by [SwiftKey](https://www.swiftkey.com/)
