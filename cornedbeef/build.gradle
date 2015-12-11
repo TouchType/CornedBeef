@@ -1,3 +1,8 @@
+plugins {
+    id "com.jfrog.artifactory" version "3.2.0"
+    id "maven-publish"
+}
+
 apply plugin: 'com.android.library'
 
 android {
@@ -8,7 +13,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -24,3 +29,35 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0-rc3'
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
 }
+
+publishing {
+    publications {
+        aar(MavenPublication) {
+            groupId "TouchType"
+            version = android.defaultConfig.versionName
+            artifactId project.getName()
+
+            // Tell maven to prepare the generated "*.aar" file for publishing
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+        }
+    }
+}
+
+artifactory {
+    contextUrl = "${artifactory_url}"
+    publish {
+        repository {
+            // The Artifactory repository key to publish to
+            repoKey = "${artifactory_repo_key}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+        defaults {
+            // Tell the Artifactory Plugin which artifacts should be published to Artifactory.
+            publications('aar')
+            publishArtifacts = true
+        }
+    }
+}
+
+
