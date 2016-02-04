@@ -30,16 +30,14 @@ dependencies {
     testCompile 'org.mockito:mockito-all:2.0.2-beta'
 }
 
-publishing {
-    publications {
-        aar(MavenPublication) {
-            groupId "TouchType"
-            version = android.defaultConfig.versionName
-            artifactId project.getName()
+publishing.publications {
+    aar(MavenPublication) {
+        groupId "TouchType"
+        version = android.defaultConfig.versionName
+        artifactId project.getName()
 
-            // Tell maven to prepare the generated "*.aar" file for publishing
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-        }
+        // Tell maven to prepare the generated "*.aar" file for publishing
+        artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
     }
 }
 
