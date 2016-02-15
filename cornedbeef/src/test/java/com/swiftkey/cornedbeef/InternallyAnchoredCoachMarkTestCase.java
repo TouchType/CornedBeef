@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.PopupWindow;
 
@@ -9,9 +10,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.swiftkey.cornedbeef.CoachMark.CoachMarkDimens;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static com.swiftkey.cornedbeef.CoachMark.CoachMarkDimens;
 
 @RunWith(RobolectricTestRunner.class)
 public class InternallyAnchoredCoachMarkTestCase {
@@ -76,7 +77,7 @@ public class InternallyAnchoredCoachMarkTestCase {
         public static class TestInternallyAnchoredCoachMarkBuilder extends InternallyAnchoredCoachMarkBuilder {
            
             public TestInternallyAnchoredCoachMarkBuilder(Context context, View anchor, String message) {
-                super(context, anchor, message);
+                super(context, anchor, message, Color.BLACK);
             }
 
             @Override

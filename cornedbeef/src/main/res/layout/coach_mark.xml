@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -8,10 +9,10 @@
         android:id="@+id/top_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/coach_mark_background"
         android:scaleType="fitXY"
         android:src="@drawable/ic_pointy_mark_up"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/coach_mark_content"
@@ -25,8 +26,7 @@
         android:id="@+id/bottom_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/coach_mark_background"
         android:scaleType="fitXY"
-        android:src="@drawable/ic_pointy_mark_down" />
-
+        android:src="@drawable/ic_pointy_mark_down"
+        tools:ignore="ContentDescription" />
 </LinearLayout>

@@ -2,10 +2,12 @@ package com.swiftkey.cornedbeef;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
@@ -32,12 +34,12 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
 
     private int mMinWidth;
     private int mArrowWidth;
-    private View mTopArrow;
-    private View mBottomArrow;
-    
+    private ImageView mTopArrow;
+    private ImageView mBottomArrow;
+
     public BubbleCoachMark(BubbleCoachMarkBuilder builder) {
         super(builder);
-        
+
         mTarget = builder.target;
         mShowBelowAnchor = builder.showBelowAnchor;
         mMinArrowMargin = (int) mContext.getResources()
@@ -51,15 +53,19 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
         LinearLayout contentHolder = (LinearLayout) view
                 .findViewById(R.id.coach_mark_content);
         contentHolder.addView(content);
-        
+
         // Measure the coach mark to get the minimum width (constrained by screen width and padding) 
         final int maxWidth = mContext.getResources()
                 .getDisplayMetrics().widthPixels - 2 * mPadding;
         view.measure(View.MeasureSpec.makeMeasureSpec(maxWidth, View.MeasureSpec.AT_MOST), 0);
         
         mMinWidth = view.getMeasuredWidth();
-        mTopArrow = view.findViewById(R.id.top_arrow);
-        mBottomArrow = view.findViewById(R.id.bottom_arrow);
+        mTopArrow = (ImageView) view.findViewById(R.id.top_arrow);
+        mBottomArrow = (ImageView) view.findViewById(R.id.bottom_arrow);
+
+        contentHolder.getBackground().setColorFilter(getBackgroundColor(), PorterDuff.Mode.SRC_ATOP);
+        mTopArrow.setColorFilter(getBackgroundColor());
+        mBottomArrow.setColorFilter(getBackgroundColor());
 
         // Ensure that content holder expands to fill the coach mark
         contentHolder.setLayoutParams(new LinearLayout.LayoutParams(
@@ -135,9 +141,9 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
         // Optional parameters with default values
         protected boolean showBelowAnchor = false;
         protected float target = 0.5f;
-        
-        public BubbleCoachMarkBuilder(Context context, View anchor, String message) {
-            super(context, anchor, message);
+
+        public BubbleCoachMarkBuilder(Context context, View anchor, String message, int textColor) {
+            super(context, anchor, message, textColor);
         }
 
         public BubbleCoachMarkBuilder(Context context, View anchor, View content) {

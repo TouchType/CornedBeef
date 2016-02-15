@@ -1,5 +1,6 @@
 package com.swiftkey.cornedbeef;
 
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
@@ -47,7 +48,9 @@ public class
         getInstrumentation().waitForIdleSync();
         waitUntilStatusBarHidden();
         
-        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(mActivity, mAnchor, "spam spam spam").build();
+        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(mActivity, mAnchor, "spam spam spam", Color.WHITE)
+                .setBackgroundColor(Color.BLUE)
+                .build();
     }
     
     public void tearDown() throws Exception {
@@ -125,7 +128,7 @@ public class
         final View topArrow;
         final View bottomArrow;
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
-                mActivity, mAnchor, "spam spam spam")
+                mActivity, mAnchor, "spam spam spam", Color.BLACK)
                 .setShowBelowAnchor(true)
                 .build();
 
@@ -157,7 +160,7 @@ public class
      */
     public void testShowPopupTargetLeft() {
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
-                mActivity, mAnchor, "spam spam spam").setTargetOffset(0.25f).build();
+                mActivity, mAnchor, "spam spam spam", Color.BLACK).setTargetOffset(0.25f).build();
         
         showCoachMark(mCoachMark);
         
@@ -173,7 +176,7 @@ public class
      */
     public void testShowPopupTargetRight() {
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
-                mActivity, mAnchor, "spam spam spam").setTargetOffset(0.75f).build();
+                mActivity, mAnchor, "spam spam spam", Color.BLACK).setTargetOffset(0.75f).build();
         
         showCoachMark(mCoachMark);
         
@@ -261,7 +264,8 @@ public class
                 mAnchor,
                 "This is a long message. We're using it to verify that when the popup content is" + 
                 " wrapped over multiple lines, the popup is still positioned above the anchor." + 
-                "Here is some more text to make sure that this the text spans multiple lines").build();
+                "Here is some more text to make sure that this the text spans multiple lines",
+                Color.BLACK).build();
   
         moveAnchor(0, 600);
         showCoachMark(mCoachMark);
@@ -286,7 +290,7 @@ public class
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
-                mActivity, mAnchor, "spam spam spam")
+                mActivity, mAnchor, "spam spam spam", Color.BLACK)
                 .setInternalAnchor(0.25f, 0.5f, 0.5f, 0.5f).build();
         
         moveAnchor(0, 200);
@@ -315,7 +319,7 @@ public class
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
-                mActivity, mAnchor, "spam spam spam")
+                mActivity, mAnchor, "spam spam spam", Color.BLACK)
                 .setTargetOffset(0.25f)
                 .setInternalAnchor(0.5f, 0.5f, 0.5f, 0.5f)
                 .build();
@@ -344,7 +348,8 @@ public class
                 mAnchor, 
                 "This is a long coach mark, to which padding will be applied." +
                 "For testing purposes it is important that this coach mark is" +
-                " wider than the width of the screen, otherwise this will fail")
+                " wider than the width of the screen, otherwise this will fail",
+                Color.BLACK)
                 .setPadding(10).build();
         
         showCoachMark(mCoachMark);
