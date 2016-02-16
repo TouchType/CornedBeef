@@ -2,13 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical" >
-    
-    <View 
+    android:orientation="vertical">
+
+    <View
         android:id="@+id/coach_mark_test_anchor"
         android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:id="@+id/coach_mark_test_anchor2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:background="@android:color/darker_gray"
-        android:layout_height="10dp"/>
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/coach_mark_test_target"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:background="@android:color/black"/>
+
+    </LinearLayout>
 
 </LinearLayout>

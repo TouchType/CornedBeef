@@ -86,7 +86,7 @@ public class InternallyAnchoredCoachMarkTestCase {
         }
 
         @Override
-        protected View createContentView(View content) {
+        protected View createContentView(String message) {
             return null;
         }
 

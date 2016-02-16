@@ -23,12 +23,12 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
                 contentView,
                 LayoutParams.WRAP_CONTENT, 
                 LayoutParams.WRAP_CONTENT);
-        
         popup.setTouchable(false);
         return popup;
     }
-    
-    protected View createContentView(View content) {
+
+    @Override
+    protected View createContentView(String message) {
         return LayoutInflater.from(mContext).inflate(R.layout.highlight_coach_mark, null);
     }
 
@@ -50,10 +50,6 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
 
         public HighlightCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
-        }
-
-        public HighlightCoachMarkBuilder(Context context, View anchor, View content) {
-            super(context, anchor, content);
         }
 
         public HighlightCoachMarkBuilder(Context context, View anchor, int contentResId) {

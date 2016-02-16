@@ -3,4 +3,5 @@
     <dimen name="coach_mark_border_radius">5dp</dimen>
     <dimen name="dialog_coach_mark_border_radius">10dp</dimen>
     <dimen name="dialog_coach_mark_width">300dp</dimen>
+    <dimen name="punchhole_coach_mark_gap">2dp</dimen>
 </resources>

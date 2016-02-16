@@ -8,7 +8,7 @@
         android:id="@+id/top_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/coach_mark_background"
+        android:tint="@color/bell_teal"
         android:scaleType="fitXY"
         android:src="@drawable/ic_pointy_mark_up"
         android:visibility="gone" />
@@ -19,13 +19,13 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:orientation="horizontal"
-        android:background="@drawable/coach_mark_bubble"/>
+        android:background="@drawable/bubble_coach_mark_bg"/>
 
     <ImageView
         android:id="@+id/bottom_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/coach_mark_background"
+        android:tint="@color/bell_teal"
         android:scaleType="fitXY"
         android:src="@drawable/ic_pointy_mark_down" />
 
