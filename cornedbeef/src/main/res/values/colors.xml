@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="coach_mark_background">#28B8CE</color>
+    <color name="bell_teal">#28B8CE</color>
+    <color name="transluscent_background">#BF000000</color>
 </resources>

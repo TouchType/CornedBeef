@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 /**
  * {@link BubbleCoachMark}s are displayed as speech bubble with a 'pointy mark'.
@@ -45,12 +47,16 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
     }
     
     @Override
-    protected View createContentView(View content) {
+    protected View createContentView(String message) {
         // Inflate the coach mark layout and add the content
-        View view = LayoutInflater.from(mContext).inflate(R.layout.coach_mark, null);
-        LinearLayout contentHolder = (LinearLayout) view
-                .findViewById(R.id.coach_mark_content);
-        contentHolder.addView(content);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.bubble_coach_mark, null);
+        LinearLayout contentHolder = (LinearLayout) view.findViewById(R.id.coach_mark_content);
+
+        final TextView textView = new TextView(mContext);
+        textView.setText(message);
+        textView.setTextColor(Color.WHITE);
+
+        contentHolder.addView(textView);
         
         // Measure the coach mark to get the minimum width (constrained by screen width and padding) 
         final int maxWidth = mContext.getResources()
@@ -138,10 +144,6 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
         
         public BubbleCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
-        }
-
-        public BubbleCoachMarkBuilder(Context context, View anchor, View content) {
-            super(context, anchor, content);
         }
 
         public BubbleCoachMarkBuilder(Context context, View anchor, int contentResId) {

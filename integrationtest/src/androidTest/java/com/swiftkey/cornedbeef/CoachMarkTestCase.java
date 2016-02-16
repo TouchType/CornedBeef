@@ -1,21 +1,20 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
 
 public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
     
@@ -148,8 +147,8 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         }
 
         @Override
-        protected View createContentView(View content) {
-            return content;
+        protected View createContentView(String message) {
+            return new TextView(mContext);
         }
 
         @Override
@@ -176,7 +175,6 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
 
             public TestCoachMarkBuilder(Context context, View anchor, String text) {
                 super(context, anchor, text);
-                content.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
             }
 
             @Override

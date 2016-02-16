@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.swiftkey.cornedbeef.PunchHoleView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transluscent_background"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/punchhole_coach_mark_upper_gap"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <TextView
+        android:id="@+id/punchhole_coach_mark_message"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"/>
+
+    <View
+        android:id="@+id/punchhole_coach_mark_lower_gap"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+</com.swiftkey.cornedbeef.PunchHoleView>

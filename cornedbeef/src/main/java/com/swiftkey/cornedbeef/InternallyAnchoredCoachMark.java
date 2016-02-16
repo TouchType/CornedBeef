@@ -39,12 +39,8 @@ public abstract class InternallyAnchoredCoachMark extends CoachMark {
             super(context, anchor, message);
         }
 
-        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, View content) {
-            super(context, anchor, content);
-        }
-
-        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, int contentResId) {
-            super(context, anchor, contentResId);
+        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, int resId) {
+            super(context, anchor, resId);
         }
 
         // Optional parameters with default values

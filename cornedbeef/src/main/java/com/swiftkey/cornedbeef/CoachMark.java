@@ -7,13 +7,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 
 /**
  * A CoachMark is a temporary popup that can be positioned above a {@link View}
@@ -49,7 +47,7 @@ public abstract class CoachMark {
     private final OnPreDrawListener mPreDrawListener;
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
-    private final long mTimeout;
+    private final long mTimeout; // In milliseconds
     
     protected Rect mDisplayFrame;
     
@@ -65,7 +63,7 @@ public abstract class CoachMark {
                 mContext.getResources().getDisplayMetrics());
 
         // Create the coach mark view
-        View view = createContentView(builder.content);
+        View view = createContentView(builder.message);
         
         // Create and initialise the PopupWindow
         mPopup = createNewPopupWindow(view);
@@ -80,7 +78,7 @@ public abstract class CoachMark {
     /**
      * Create the coach mark view
      */
-    protected abstract View createContentView(View content);
+    protected abstract View createContentView(String message);
     
     /**
      * Create and initialise a new {@link PopupWindow}
@@ -113,16 +111,18 @@ public abstract class CoachMark {
         final CoachMarkDimens<Integer> popupDimens = getPopupDimens(anchorDimens);
         updateView(popupDimens, anchorDimens);
         
-        // Dismiss coach mark after the timeout has passed
-        getContentView().postDelayed(new Runnable() {
-            
-            @Override
-            public void run() {
-                if(mPopup.isShowing()) {
-                    dismiss();
+        // Dismiss coach mark after the timeout has passed if it is greater than 0.
+        if (mTimeout > 0) {
+            getContentView().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    if(mPopup.isShowing()) {
+                        dismiss();
+                    }
                 }
-            }
-        }, mTimeout);
+            }, mTimeout);
+        }
 
         mPopup.setWidth(popupDimens.width);
         mPopup.showAtLocation(mTokenView, Gravity.NO_GRAVITY, popupDimens.x, popupDimens.y);
@@ -255,7 +255,7 @@ public abstract class CoachMark {
         // Required parameters
         protected Context context;
         protected View anchor;
-        protected View content;
+        protected String message;
         
         // Optional parameters with default values
         protected long timeout = 10000;
@@ -264,23 +264,17 @@ public abstract class CoachMark {
         protected int animationStyle = R.style.CoachMarkAnimation;
         protected View tokenView;
         protected OnShowListener showListener;
-        
-        public CoachMarkBuilder(Context context, View anchor, String message) {
-            this(context, anchor, new TextView(context));
-            ((TextView) content).setTextColor(Color.WHITE);
-            ((TextView) content).setText(message);
+
+        public CoachMarkBuilder(Context context, View anchor, int resId) {
+            this(context, anchor, context.getString(resId));
         }
 
-        public CoachMarkBuilder(Context context, View anchor, int contentResId) {
-            this(context, anchor, LayoutInflater.from(context).inflate(contentResId, null));
-        }
-        
-        public CoachMarkBuilder(Context context, View anchor, View content) {
+        public CoachMarkBuilder(Context context, View anchor, String string) {
             this.context = context;
             this.anchor = anchor;
-            this.content = content;            
+            this.message = string;
         }
-        
+
         /**
          * If the desired anchor view does not contain a valid window token then
          * the token of an alternative view may be used to display the coach mark
