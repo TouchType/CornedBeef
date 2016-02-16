@@ -1,3 +1,5 @@
+*This is an open source library. Please do not create branches, public forks or pull requests containing sensitive information*
+
 # Float
 
 An Android library by for displaying instructional overlays or 'coach marks' that _float_ above the current window.
