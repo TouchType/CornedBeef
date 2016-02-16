@@ -47,7 +47,7 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
     @Override
     protected View createContentView(View content) {
         // Inflate the coach mark layout and add the content
-        View view = LayoutInflater.from(mContext).inflate(R.layout.coach_mark, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.bubble_coach_mark, null);
         LinearLayout contentHolder = (LinearLayout) view
                 .findViewById(R.id.coach_mark_content);
         contentHolder.addView(content);

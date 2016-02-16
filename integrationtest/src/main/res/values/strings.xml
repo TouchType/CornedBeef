@@ -2,5 +2,9 @@
     <string name="app_name">CornedBeef</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+
+    <string name="punchhole_message_text">Enable the emoji predictions</string>
+
+    <string name="layered_message_text">Want to customise your keyboard?</string>
+    <string name="layered_button_text">Accept</string>
 </resources>

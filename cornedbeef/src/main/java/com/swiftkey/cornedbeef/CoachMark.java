@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.AnimRes;
+import android.support.annotation.LayoutRes;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,14 +51,14 @@ public abstract class CoachMark {
     private final OnPreDrawListener mPreDrawListener;
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
-    private final long mTimeout;
-    
+    private final long mTimeoutInMs;
+
     protected Rect mDisplayFrame;
     
     protected CoachMark(CoachMarkBuilder builder) {
         mAnchor = builder.anchor;
         mContext = builder.context;
-        mTimeout = builder.timeout;
+        mTimeoutInMs = builder.timeout;
         mDismissListener = builder.dismissListener;
         mShowListener = builder.showListener;
         mTokenView = builder.tokenView != null ? builder.tokenView : mAnchor;
@@ -112,17 +114,19 @@ public abstract class CoachMark {
         final CoachMarkDimens<Integer> anchorDimens = getAnchorDimens();
         final CoachMarkDimens<Integer> popupDimens = getPopupDimens(anchorDimens);
         updateView(popupDimens, anchorDimens);
-        
-        // Dismiss coach mark after the timeout has passed
-        getContentView().postDelayed(new Runnable() {
-            
-            @Override
-            public void run() {
-                if(mPopup.isShowing()) {
-                    dismiss();
+
+        // Dismiss coach mark after the timeout has passed if it is greater than 0.
+        if (mTimeoutInMs > 0) {
+            getContentView().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    if(mPopup.isShowing()) {
+                        dismiss();
+                    }
                 }
-            }
-        }, mTimeout);
+            }, mTimeoutInMs);
+        }
 
         mPopup.setWidth(popupDimens.width);
         mPopup.showAtLocation(mTokenView, Gravity.NO_GRAVITY, popupDimens.x, popupDimens.y);
@@ -271,7 +275,7 @@ public abstract class CoachMark {
             ((TextView) content).setText(message);
         }
 
-        public CoachMarkBuilder(Context context, View anchor, int contentResId) {
+        public CoachMarkBuilder(Context context, View anchor, @LayoutRes int contentResId) {
             this(context, anchor, LayoutInflater.from(context).inflate(contentResId, null));
         }
         
@@ -297,12 +301,12 @@ public abstract class CoachMark {
          * Set the period of time after which the coach mark should be
          * automatically dismissed
          * 
-         * @param timeout
+         * @param timeoutInMs
          *      the time in milliseconds after which to dismiss the coach
          *      mark (defaults to 10 seconds)
          */
-        public CoachMarkBuilder setTimeout(long timeout) {
-            this.timeout = timeout;
+        public CoachMarkBuilder setTimeout(long timeoutInMs) {
+            this.timeout = timeoutInMs;
             return this;
         }
         
@@ -335,7 +339,7 @@ public abstract class CoachMark {
          * @param animationStyle
          *      the resource ID of the animation to be shown
          */
-        public CoachMarkBuilder setAnimation(int animationStyle) {
+        public CoachMarkBuilder setAnimation(@AnimRes int animationStyle) {
             this.animationStyle = animationStyle;
             return this;
         }

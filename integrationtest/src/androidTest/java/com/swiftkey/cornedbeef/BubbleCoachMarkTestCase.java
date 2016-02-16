@@ -1,6 +1,5 @@
 package com.swiftkey.cornedbeef;
 
-import android.graphics.Rect;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.TypedValue;
@@ -14,12 +13,14 @@ import android.widget.TextView;
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
+import static com.swiftkey.cornedbeef.TestHelper.moveAnchor;
+import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
+import static com.swiftkey.cornedbeef.TestHelper.waitUntilStatusBarHidden;
+
 public class
         BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
-    
-    private static final int TIMEOUT = 1000;
-    private static final int SLEEP = 100;
-    
+
     private SpamActivity mActivity;
     private CoachMark mCoachMark;
     private View mAnchor;
@@ -41,17 +42,17 @@ public class
                         WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 mActivity.setContentView(R.layout.coach_mark_test_activity);
-                mAnchor = mActivity.findViewById(R.id.coach_mark_test_anchor);   
+                mAnchor = mActivity.findViewById(R.id.coach_mark_test_empty_anchor);
             }
         });
         getInstrumentation().waitForIdleSync();
-        waitUntilStatusBarHidden();
+        waitUntilStatusBarHidden(mActivity);
         
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(mActivity, mAnchor, "spam spam spam").build();
     }
     
     public void tearDown() throws Exception {
-        dismissCoachMark(mCoachMark);
+        dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
         mActivity = null;
@@ -65,8 +66,8 @@ public class
         final View topArrow;
         final View bottomArrow;
 
-        moveAnchor(0, 200);        
-        showCoachMark(mCoachMark);
+        moveAnchor(getInstrumentation(), mAnchor, 0, 200);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         ViewGroup content = (ViewGroup) mCoachMark.getContentView()
                 .findViewById(R.id.coach_mark_content);
@@ -95,7 +96,7 @@ public class
         final View topArrow;
         final View bottomArrow;
 
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
 
         ViewGroup content = (ViewGroup) mCoachMark.getContentView()
                 .findViewById(R.id.coach_mark_content);
@@ -129,8 +130,8 @@ public class
                 .setShowBelowAnchor(true)
                 .build();
 
-        moveAnchor(0, 200);
-        showCoachMark(mCoachMark);
+        moveAnchor(getInstrumentation(), mAnchor, 0, 200);
+        showCoachMark(getInstrumentation(), mCoachMark);
 
         ViewGroup content = (ViewGroup) mCoachMark.getContentView()
                 .findViewById(R.id.coach_mark_content);
@@ -159,7 +160,7 @@ public class
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTargetOffset(0.25f).build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         View arrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
         MarginLayoutParams params = (MarginLayoutParams) arrow.getLayoutParams();
@@ -175,7 +176,7 @@ public class
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTargetOffset(0.75f).build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         View arrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
         MarginLayoutParams params = (MarginLayoutParams) arrow.getLayoutParams();
@@ -188,8 +189,8 @@ public class
      * Test that the popup is removed when the user taps on it
      */
     public void testDismissOnTouch() {
-        moveAnchor(0, 200);
-        showCoachMark(mCoachMark);
+        moveAnchor(getInstrumentation(), mAnchor, 0, 200);
+        showCoachMark(getInstrumentation(), mCoachMark);
 
         // Get coach mark location
         int[] contentPos = new int[2];
@@ -225,7 +226,7 @@ public class
         final View topArrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
         final View bottomArrow = mCoachMark.getContentView().findViewById(R.id.bottom_arrow);
 
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         mAnchor.getLocationOnScreen(anchorPos);
         mCoachMark.getContentView().getLocationOnScreen(contentPos);
@@ -235,7 +236,7 @@ public class
         assertEquals(View.GONE, bottomArrow.getVisibility());
         assertEquals(anchorPos[1]+mAnchor.getHeight(), contentPos[1]);
         
-        moveAnchor(50, 200);
+        moveAnchor(getInstrumentation(), mAnchor, 50, 200);
         
         int oldCoachMarkX = contentPos[0];
         int oldCoachMarkY = contentPos[1];
@@ -245,7 +246,7 @@ public class
         assertTrue(mCoachMark.isShowing());
         assertEquals(View.GONE, topArrow.getVisibility());
         assertEquals(View.VISIBLE, bottomArrow.getVisibility());
-        assertEquals(anchorPos[1]-mCoachMark.getContentView().getHeight(), contentPos[1]);
+        assertEquals(anchorPos[1] - mCoachMark.getContentView().getHeight(), contentPos[1]);
         assertTrue(oldCoachMarkX != contentPos[0]);
         assertTrue(oldCoachMarkY != contentPos[1]);
     }
@@ -263,8 +264,8 @@ public class
                 " wrapped over multiple lines, the popup is still positioned above the anchor." + 
                 "Here is some more text to make sure that this the text spans multiple lines").build();
   
-        moveAnchor(0, 600);
-        showCoachMark(mCoachMark);
+        moveAnchor(getInstrumentation(), mAnchor, 0, 600);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         final View topArrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
         final View bottomArrow = mCoachMark.getContentView().findViewById(R.id.bottom_arrow);
@@ -288,9 +289,9 @@ public class
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam")
                 .setInternalAnchor(0.25f, 0.5f, 0.5f, 0.5f).build();
-        
-        moveAnchor(0, 200);
-        showCoachMark(mCoachMark);
+
+        moveAnchor(getInstrumentation(), mAnchor, 0, 200);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         final View topArrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
         final View bottomArrow = mCoachMark.getContentView().findViewById(R.id.bottom_arrow);
@@ -320,7 +321,7 @@ public class
                 .setInternalAnchor(0.5f, 0.5f, 0.5f, 0.5f)
                 .build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         mAnchor.getLocationOnScreen(anchorPos);
         mCoachMark.getContentView().getLocationOnScreen(contentPos);       
@@ -328,8 +329,8 @@ public class
         MarginLayoutParams params = (MarginLayoutParams) arrow.getLayoutParams();
 
         assertTrue(mCoachMark.isShowing());
-        assertTrue(contentPos[0]+params.leftMargin > anchorPos[0] + mAnchor.getWidth() * 0.50);
-        assertTrue(contentPos[0]+params.leftMargin < anchorPos[0] + mAnchor.getWidth() * 0.75);
+        assertTrue(contentPos[0] + params.leftMargin > anchorPos[0] + mAnchor.getWidth() * 0.50);
+        assertTrue(contentPos[0] + params.leftMargin < anchorPos[0] + mAnchor.getWidth() * 0.75);
     }
     
     /**
@@ -347,7 +348,7 @@ public class
                 " wider than the width of the screen, otherwise this will fail")
                 .setPadding(10).build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         mCoachMark.getContentView().getLocationOnScreen(contentPos);
         
@@ -355,72 +356,6 @@ public class
                 TypedValue.COMPLEX_UNIT_DIP, 10, mActivity.getResources().getDisplayMetrics());
 
         assertEquals(paddingInPx, contentPos[0]);
-        assertEquals(screenWidth-paddingInPx, contentPos[0]+mCoachMark.getContentView().getWidth());
-    }
-    
-    /*
-     * HELPERS
-     */
-    
-    /**
-     * Move the anchor view to the specified location
-     */
-    private void moveAnchor(final int x, final int y) {
-        final ViewGroup.MarginLayoutParams params = 
-                (MarginLayoutParams) mAnchor.getLayoutParams();
-        params.leftMargin = x;
-        params.topMargin = y;
-        
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                mAnchor.setLayoutParams(params);
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-    }
-
-    /**
-     * Call {@link CoachMark#show()} on the given {@link CoachMark}
-     */
-    private void showCoachMark(final CoachMark coachMark) {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                coachMark.show();
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-    }
-    
-    /**
-     * Call {@link CoachMark#dismiss()}
-     * on the given {@link CoachMark}
-     */
-    private void dismissCoachMark(final CoachMark coachMark) {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                coachMark.dismiss();
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-    }
-    
-    /**
-     * Wait until the status bar is fully hidden
-     */
-    private void waitUntilStatusBarHidden() {
-        final Rect rect = new Rect();
-        final long startTime = SystemClock.uptimeMillis();
-        do {
-            try {
-                mActivity.getWindow().getDecorView()
-                    .getWindowVisibleDisplayFrame(rect);
-                Thread.sleep(SLEEP);
-            } catch (InterruptedException e) {
-                break;
-            }
-        } while (SystemClock.uptimeMillis() - startTime < TIMEOUT && rect.top != 0);
+        assertEquals(screenWidth - paddingInPx, contentPos[0] + mCoachMark.getContentView().getWidth());
     }
 }

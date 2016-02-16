@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.view.View;
 
 public abstract class InternallyAnchoredCoachMark extends CoachMark {
@@ -43,7 +44,7 @@ public abstract class InternallyAnchoredCoachMark extends CoachMark {
             super(context, anchor, content);
         }
 
-        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, int contentResId) {
+        public InternallyAnchoredCoachMarkBuilder(Context context, View anchor, @LayoutRes int contentResId) {
             super(context, anchor, contentResId);
         }
 

@@ -6,4 +6,6 @@
         <item name="@android:windowExitAnimation">@anim/coach_mark_hide</item>
     </style>
 
+    <style name="AppTheme" parent="android:Theme.Light"/>
+
 </resources>

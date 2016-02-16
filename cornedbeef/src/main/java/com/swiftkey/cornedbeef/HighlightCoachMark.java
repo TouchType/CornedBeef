@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -23,11 +24,11 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
                 contentView,
                 LayoutParams.WRAP_CONTENT, 
                 LayoutParams.WRAP_CONTENT);
-        
+
         popup.setTouchable(false);
         return popup;
     }
-    
+
     protected View createContentView(View content) {
         return LayoutInflater.from(mContext).inflate(R.layout.highlight_coach_mark, null);
     }
@@ -56,7 +57,7 @@ public class HighlightCoachMark extends InternallyAnchoredCoachMark {
             super(context, anchor, content);
         }
 
-        public HighlightCoachMarkBuilder(Context context, View anchor, int contentResId) {
+        public HighlightCoachMarkBuilder(Context context, View anchor, @LayoutRes int contentResId) {
             super(context, anchor, contentResId);
         }
         

@@ -1,8 +1,6 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -12,10 +10,12 @@ import android.widget.PopupWindow;
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
+import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
+import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
 
 public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
     
@@ -41,7 +41,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
                         WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 mActivity.setContentView(R.layout.coach_mark_test_activity);
-                mAnchor = mActivity.findViewById(R.id.coach_mark_test_anchor);
+                mAnchor = mActivity.findViewById(R.id.coach_mark_test_empty_anchor);
             }
         });
         getInstrumentation().waitForIdleSync();
@@ -50,7 +50,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     }
     
     public void tearDown() throws Exception {
-        dismissCoachMark(mCoachMark);
+        dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
         mActivity = null;
@@ -61,15 +61,15 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * Test that the popup is removed when dismiss is called
      */
     public void testDismissMethodCall() {
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
 
         assertTrue(mCoachMark.isShowing());
         
-        dismissCoachMark(mCoachMark);
+        dismissCoachMark(getInstrumentation(), mCoachMark);
 
         assertFalse(mCoachMark.isShowing());
     }
-    
+
     /**
      * Test that the popup disappears after the specified timeout has passed
      */
@@ -77,7 +77,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTimeout(1000).build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
 
         assertTrue(mCoachMark.isShowing());
 
@@ -90,7 +90,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * Test that the popup disappears if the anchor is not visible
      */
     public void testDismissWhenAnchorNotVisible() {       
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         assertTrue(mCoachMark.isShowing());
 
@@ -116,8 +116,8 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
                 mActivity, mAnchor, "spam spam spam")
                 .setOnDismissListener(mockListener).build();
         
-        showCoachMark(mCoachMark);
-        dismissCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
+        dismissCoachMark(getInstrumentation(), mCoachMark);
         
         verify(mockListener, times(1)).onDismiss();
     }
@@ -132,7 +132,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
                 mActivity, mAnchor, "spam spam spam")
                 .setOnShowListener(mockListener).build();
         
-        showCoachMark(mCoachMark);
+        showCoachMark(getInstrumentation(), mCoachMark);
         
         verify(mockListener, times(1)).onShow();
     }
@@ -176,7 +176,6 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
 
             public TestCoachMarkBuilder(Context context, View anchor, String text) {
                 super(context, anchor, text);
-                content.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
             }
 
             @Override
@@ -184,33 +183,5 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
                 return new TestCoachMark(this);
             }
         }
-    }
-    
-
-    /**
-     * Call {@link CoachMark#show()} on the given {@link CoachMark}
-     */
-    private void showCoachMark(final CoachMark coachMark) {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                coachMark.show();
-            }
-        });
-        getInstrumentation().waitForIdleSync();
-    }
-    
-    /**
-     * Call {@link CoachMark#dismiss()}
-     * on the given {@link CoachMark}
-     */
-    private void dismissCoachMark(final CoachMark coachMark) {
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                coachMark.dismiss();
-            }
-        });
-        getInstrumentation().waitForIdleSync();
     }
 }
