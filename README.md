@@ -6,7 +6,7 @@ An Android library by for displaying instructional overlays or 'coach marks' tha
 
 Coach marks can be associated with a particular view but are independent of the underlying layout, making it easy to add them to new and existing projects alike. Separation from the standard layout also makes it easier to control where and when overlays are visible, which is particularly useful when coach marks are temporary or context specific.
 
-There are currently two types of pre-built coach mark: [BubbleCoachMark](#bubble) and [HighlightCoachMark](#highlight).
+There are currently 4 types of pre-built coach mark: [BubbleCoachMark](#bubble), [HighlightCoachMark](#highlight), [LayeredCoachMark](#layered) and [PunchHoleCoachMark](#punchhole).
 
 ### <a name="bubble">BubbleCoachMark</a>
 
@@ -15,6 +15,14 @@ A speech bubble that can be configured to point to a particular view, or sub-reg
 ### <a name="highlight">HighlightCoachMark</a>
 
 A thin border around a particular view, or sub-region.
+
+### <a name="layered">LayeredCoachMark</a>
+
+A translucent layer onto the particular view, or sub-region. Layered coach marks can include a simple message or a fully customisable view.
+
+### <a name="punchhole">PunchHoleCoachMark</a>
+
+A translucent layer onto the particular view and "Punch Hole" for given child view component. The target child view should be within the parent view to properly located the hole. PunchHole coach marks can include a simple message or a fully customisable view where upper or lower side of the hole. 
 
 ### Building and running the tests
 
