@@ -10,6 +10,7 @@ import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.PopupWindow;
 
 /**
@@ -26,6 +27,8 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
     private float mRelCircleRadius;
 
     private PunchHoleView mPunchHoleView;
+    private AccelerateDecelerateInterpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
+    private ObjectAnimator mHorizontalAnimator;
 
     protected PunchHoleCoachMark(PunchHoleCoachMarkBuilder builder) {
         super(builder);
@@ -36,6 +39,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
 
         mPunchHoleView.setOnTargetClickListener(builder.targetClickListener);
         mPunchHoleView.setOnGlobalClickListener(builder.globalClickListener);
+        mPunchHoleView.setBackgroundColor(builder.overlayColor);
 
         mHorizontalTranslation = builder.horizontalTranslation;
     }
@@ -90,12 +94,17 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
             return;
         }
 
+        if (mHorizontalTranslation) {
+            animateHorizontalTranslation();
+        }
+
         // Calculating the proper padding of layout
         int upperGap = 0;
         int lowerGap = 0;
         if (relCircleY < (mAnchor.getHeight() / 2)) { // Circle in upper side
             upperGap = (int) (relCircleY + mRelCircleRadius);
-        } else { // Circle in lower side
+        } else {
+            // Circle in lower side
             lowerGap = (int) (relCircleY - mRelCircleRadius);
         }
 
@@ -106,15 +115,6 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
                 horizontalPadding, verticalPadding + lowerGap);
     }
 
-    @Override
-    public void show() {
-        super.show();
-
-        if (mHorizontalTranslation) {
-            animateHorizontalTranslation();
-        }
-    }
-
     /**
      * Move the punch hole from left to right of the target view, unless the
      * width of the target view is smaller than the diameter of the punch hole
@@ -122,27 +122,27 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void animateHorizontalTranslation() {
-        if (canHaveHorizontalTranslation()) {
-            final int animationStartX = isRtlConfig()
-                    ? mTargetViewLoc[0] + mTargetView.getWidth() - (int) mRelCircleRadius
-                    : mTargetViewLoc[0] + (int) mRelCircleRadius;
-            final int animationEndX = isRtlConfig()
-                    ? mTargetViewLoc[0] + (int) mRelCircleRadius
-                    : mTargetViewLoc[0] + mTargetView.getWidth() - (int) mRelCircleRadius;
-            final ObjectAnimator animator = ObjectAnimator.ofInt(
+        if (canHaveHorizontalTranslation() && mHorizontalAnimator == null) {
+            final int leftMostPosition = mTargetViewLoc[0] + (int) mRelCircleRadius;
+            final int rightMostPosition = mTargetViewLoc[0] + mTargetView.getWidth() - (int) mRelCircleRadius;
+            final int animationStartX = isRtlConfig() ? rightMostPosition : leftMostPosition;
+            final int animationEndX = isRtlConfig() ? leftMostPosition : rightMostPosition;
+            mHorizontalAnimator = ObjectAnimator.ofInt(
                     mPunchHoleView,
                     "circleCenterX",
                     animationStartX,
                     animationEndX);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    mPunchHoleView.invalidate();
-                }
-            });
+            mHorizontalAnimator.addUpdateListener(
+                    new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            mPunchHoleView.invalidate();
+                        }
+                    });
             // the animation lasts as long as the coachmark is on screen
-            animator.setDuration(mTimeoutInMs);
-            animator.start();
+            mHorizontalAnimator.setDuration(mTimeoutInMs);
+            mHorizontalAnimator.setInterpolator(INTERPOLATOR);
+            mHorizontalAnimator.start();
         }
     }
 
@@ -165,17 +165,14 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
      */
     private boolean isRtlConfig() {
         final Configuration config = mAnchor.getResources().getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                && config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-            return true;
-        }
-        String a = "";
-        return false;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                && config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     public static class PunchHoleCoachMarkBuilder extends InternallyAnchoredCoachMarkBuilder {
 
         protected View targetView;
+        protected int overlayColor = 0xBF000000;
 
         protected View.OnClickListener targetClickListener;
         protected View.OnClickListener globalClickListener;
@@ -221,6 +218,16 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
          */
         public PunchHoleCoachMarkBuilder setOnGlobalClickListener(View.OnClickListener listener) {
             this.globalClickListener = listener;
+            return this;
+        }
+
+        /**
+         * Set the color of this coach mark.
+         *
+         * @param overlayColor the color to set
+         */
+        public PunchHoleCoachMarkBuilder setOverlayColor(int overlayColor) {
+            this.overlayColor = overlayColor;
             return this;
         }
 

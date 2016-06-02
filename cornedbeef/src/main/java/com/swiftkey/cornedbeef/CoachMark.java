@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.AnimRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.StyleRes;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -337,9 +337,9 @@ public abstract class CoachMark {
          * Set which animation will be used when displaying/hiding the coach mark
          * 
          * @param animationStyle
-         *      the resource ID of the animation to be shown
+         *      the resource ID of the Style to be used for showing and hiding the coach mark
          */
-        public CoachMarkBuilder setAnimation(@AnimRes int animationStyle) {
+        public CoachMarkBuilder setAnimation(@StyleRes int animationStyle) {
             this.animationStyle = animationStyle;
             return this;
         }

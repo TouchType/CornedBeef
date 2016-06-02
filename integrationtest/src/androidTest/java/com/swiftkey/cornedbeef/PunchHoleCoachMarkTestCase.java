@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.test.ViewAsserts;
@@ -37,6 +38,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
 
     private TextView mTextView;
     private static final String MESSAGE = "spam spam spam";
+    private final int OVERLAY_COLOR = Color.BLACK;
 
     public PunchHoleCoachMarkTestCase() {
         super(SpamActivity.class);
@@ -90,6 +92,13 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
     public void testViewsCreatedAndVisible_animation() {
         setupCoachmark(true);
         checkViewsCreatedAndVisible();
+    }
+
+    public void testOverlayCorrectColor() {
+        setupCoachmark(false);
+        final View container = mCoachMark.getContentView();
+        int color = ((ColorDrawable) container.getBackground()).getColor();
+        assertEquals(OVERLAY_COLOR, color);
     }
 
     /**
@@ -297,6 +306,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
                 .setHorizontalTranslation(animation)
                 .setOnTargetClickListener(mMockTargetClickListener)
                 .setOnGlobalClickListener(mMockCoachMarkClickListener)
+                .setOverlayColor(OVERLAY_COLOR)
                 .build();
     }
 }
