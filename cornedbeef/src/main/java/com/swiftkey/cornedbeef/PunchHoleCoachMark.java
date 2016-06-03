@@ -1,5 +1,6 @@
 package com.swiftkey.cornedbeef;
 
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.PopupWindow;
 
 /**
@@ -19,7 +21,7 @@ import android.widget.PopupWindow;
 public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
 
     private final float mGap;
-    private final boolean mHorizontalTranslation;
+    private final long mHorizontalTranslationDuration;
 
     private final View mTargetView;
     private final int[] mTargetViewLoc = new int[2];
@@ -27,8 +29,8 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
     private float mRelCircleRadius;
 
     private PunchHoleView mPunchHoleView;
-    private AccelerateDecelerateInterpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
-    private ObjectAnimator mHorizontalAnimator;
+    private Interpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
+    private AnimatorSet mHorizontalAnimators;
 
     protected PunchHoleCoachMark(PunchHoleCoachMarkBuilder builder) {
         super(builder);
@@ -41,7 +43,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         mPunchHoleView.setOnGlobalClickListener(builder.globalClickListener);
         mPunchHoleView.setBackgroundColor(builder.overlayColor);
 
-        mHorizontalTranslation = builder.horizontalTranslation;
+        mHorizontalTranslationDuration = builder.horizontalAnimationDuration;
     }
 
     @Override
@@ -82,7 +84,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         // circle on the start of the target view (it will move to the end).
         // However, if the width of the target view is smaller than the diameter
         // of the punch hole, just center the circle (no point in animating).
-        final int startOffsetX = mHorizontalTranslation && canHaveHorizontalTranslation()
+        final int startOffsetX = hasHorizontalTranslation()
                 ?  isRtlConfig()
                         ? mTargetViewLoc[0] + mTargetView.getWidth() - (int) mRelCircleRadius
                         : mTargetViewLoc[0] + (int) mRelCircleRadius
@@ -94,7 +96,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
             return;
         }
 
-        if (mHorizontalTranslation) {
+        if (hasHorizontalTranslation()) {
             animateHorizontalTranslation();
         }
 
@@ -122,38 +124,38 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void animateHorizontalTranslation() {
-        if (canHaveHorizontalTranslation() && mHorizontalAnimator == null) {
+        if (hasHorizontalTranslation() && mHorizontalAnimators == null) {
             final int leftMostPosition = mTargetViewLoc[0] + (int) mRelCircleRadius;
             final int rightMostPosition = mTargetViewLoc[0] + mTargetView.getWidth() - (int) mRelCircleRadius;
-            final int animationStartX = isRtlConfig() ? rightMostPosition : leftMostPosition;
-            final int animationEndX = isRtlConfig() ? leftMostPosition : rightMostPosition;
-            mHorizontalAnimator = ObjectAnimator.ofInt(
-                    mPunchHoleView,
-                    "circleCenterX",
-                    animationStartX,
-                    animationEndX);
-            mHorizontalAnimator.addUpdateListener(
-                    new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            mPunchHoleView.invalidate();
-                        }
-                    });
-            // the animation lasts as long as the coachmark is on screen
-            mHorizontalAnimator.setDuration(mTimeoutInMs);
-            mHorizontalAnimator.setInterpolator(INTERPOLATOR);
-            mHorizontalAnimator.start();
+
+            final int startX = isRtlConfig() ? rightMostPosition : leftMostPosition;
+            final int endX = isRtlConfig() ? leftMostPosition : rightMostPosition;
+
+            final ValueAnimator[] horizontalAnimations = new ValueAnimator[]{
+                    ObjectAnimator.ofInt(mPunchHoleView, "circleCenterX", startX, endX),
+                    ObjectAnimator.ofInt(mPunchHoleView, "circleCenterX", endX, startX)
+            };
+
+            mHorizontalAnimators = new AnimatorSet();
+            mHorizontalAnimators.playSequentially(horizontalAnimations);
+            // Set both durations to half the overall animation length (both animations together
+            // will then sum to the duration)
+            mHorizontalAnimators.setDuration(mHorizontalTranslationDuration / 2);
+            mHorizontalAnimators.setInterpolator(INTERPOLATOR);
+            mHorizontalAnimators.start();
         }
     }
 
     /**
-     * Check if we can animate the circle from left to right, i.e. if the
-     * width of the target view is bigger than the diameter of the circle
-     * (otherwise there's no space to perform the animation).
-     * @return  whether we can display the animation
+     * Check if the punch hole should have a horizontal animation. Checks:
+     *  - the width of the target view is bigger than the diameter of the circle
+     *      (otherwise there's no space to perform the animation).
+     *  - the duration is greater than 0
+     *
+     * @return  whether to display the animation
      */
-    private boolean canHaveHorizontalTranslation() {
-        return mTargetView.getWidth() > 2 * mRelCircleRadius;
+    private boolean hasHorizontalTranslation() {
+        return mHorizontalTranslationDuration > 0 && mTargetView.getWidth() > 2 * mRelCircleRadius;
     }
 
     /**
@@ -177,7 +179,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         protected View.OnClickListener targetClickListener;
         protected View.OnClickListener globalClickListener;
 
-        protected boolean horizontalTranslation;
+        protected long horizontalAnimationDuration;
 
         public PunchHoleCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
@@ -232,14 +234,19 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         }
 
         /**
-         * Set whether the punch hole animates going over the target view from
-         * left to right.
+         * Setting this to a non-zero value wil animate the punch hole moving over the
+         * target view from start to end, on APIs Honeycomb and above and where the target view
+         * has a ratio that supports a horizontal translation
          *
-         * @param horizontalTranslation
+         * @param horizontalDuration the duration in milliseconds the animation should last for
          */
         @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public PunchHoleCoachMarkBuilder setHorizontalTranslation(boolean horizontalTranslation) {
-            this.horizontalTranslation = horizontalTranslation;
+        public PunchHoleCoachMarkBuilder setHorizontalTranslationDuration(long horizontalDuration) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                return this;
+            }
+
+            this.horizontalAnimationDuration = horizontalDuration;
             return this;
         }
 

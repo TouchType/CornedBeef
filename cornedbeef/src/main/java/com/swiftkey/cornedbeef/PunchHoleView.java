@@ -86,6 +86,8 @@ public class PunchHoleView extends LinearLayout {
                 centerX - (int) radius, centerY - (int) radius,
                 centerX + (int) radius, centerY + (int) radius);
 
+        postInvalidate();
+
         return true;
     }
 
@@ -100,6 +102,7 @@ public class PunchHoleView extends LinearLayout {
     public boolean setCircleCenterX(int centerX) {
         if (this.mCircleCenterX != centerX) {
             this.mCircleCenterX = centerX;
+            postInvalidate();
             return true;
         } else {
             return false;
@@ -115,6 +118,7 @@ public class PunchHoleView extends LinearLayout {
     private boolean setCircleCenterY(int centerY) {
         if (this.mCircleCenterY != centerY) {
             this.mCircleCenterY = centerY;
+            postInvalidate();
             return true;
         } else {
             return false;
@@ -130,6 +134,7 @@ public class PunchHoleView extends LinearLayout {
     private boolean setCircleRadius(float radius) {
         if (this.mCircleRadius != radius) {
             this.mCircleRadius = radius;
+            postInvalidate();
             return true;
         } else {
             return false;

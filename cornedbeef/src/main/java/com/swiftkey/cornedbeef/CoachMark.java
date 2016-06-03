@@ -51,7 +51,7 @@ public abstract class CoachMark {
     private final OnPreDrawListener mPreDrawListener;
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
-    final long mTimeoutInMs;
+    private final long mTimeoutInMs;
 
     protected Rect mDisplayFrame;
     

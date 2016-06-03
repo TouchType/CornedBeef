@@ -303,7 +303,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
     private void setupCoachmark(final boolean animation) {
         mCoachMark = new PunchHoleCoachMark.PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
                 .setTargetView(mTargetView)
-                .setHorizontalTranslation(animation)
+                .setHorizontalTranslationDuration(animation ? 1000 : 0)
                 .setOnTargetClickListener(mMockTargetClickListener)
                 .setOnGlobalClickListener(mMockCoachMarkClickListener)
                 .setOverlayColor(OVERLAY_COLOR)
