@@ -1,5 +1,7 @@
 package com.swiftkey.cornedbeef;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.test.ViewAsserts;
@@ -36,6 +38,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
 
     private TextView mTextView;
     private static final String MESSAGE = "spam spam spam";
+    private final int OVERLAY_COLOR = Color.BLACK;
 
     public PunchHoleCoachMarkTestCase() {
         super(SpamActivity.class);
@@ -65,11 +68,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         mTextView = (TextView) LayoutInflater.from(mActivity)
                 .inflate(R.layout.sample_customised_punchhole_content, null);
         mTextView.setText(MESSAGE);
-        mCoachMark = new PunchHoleCoachMark.PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
-                .setTargetView(mTargetView)
-                .setOnTargetClickListener(mMockTargetClickListener)
-                .setOnGlobalClickListener(mMockCoachMarkClickListener)
-                .build();
+        mTextView.setTextColor(Color.WHITE); // to make visual debugging easier
     }
 
     public void tearDown() throws Exception {
@@ -85,10 +84,27 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         super.tearDown();
     }
 
+    public void testViewsCreatedAndVisible_noAnimation() {
+        setupCoachmark(false);
+        checkViewsCreatedAndVisible();
+    }
+
+    public void testViewsCreatedAndVisible_animation() {
+        setupCoachmark(true);
+        checkViewsCreatedAndVisible();
+    }
+
+    public void testOverlayCorrectColor() {
+        setupCoachmark(false);
+        final View container = mCoachMark.getContentView();
+        int color = ((ColorDrawable) container.getBackground()).getColor();
+        assertEquals(OVERLAY_COLOR, color);
+    }
+
     /**
      * Test the view creation and visibility.
      */
-    public void testViewsCreatedAndVisible() {
+    private void checkViewsCreatedAndVisible() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
@@ -107,10 +123,20 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         assertEquals(MESSAGE, mTextView.getText().toString());
     }
 
+    public void testTargetClick_noAnimation() {
+        setupCoachmark(false);
+        checkTargetClick();
+    }
+
+    public void testTargetClick_animation() {
+        setupCoachmark(true);
+        checkTargetClick();
+    }
+
     /**
      * Test the target's click listener
      */
-    public void testTargetClick() {
+    private void checkTargetClick() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
@@ -123,10 +149,20 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         verify(mMockCoachMarkClickListener, never()).onClick(container);
     }
 
+    public void testCoachMarkClick_noAnimation() {
+        setupCoachmark(false);
+        checkCoachMarkClick();
+    }
+
+    public void testCoachMarkClick_animation() {
+        setupCoachmark(true);
+        checkCoachMarkClick();
+    }
+
     /**
      * Test the coachmark's click listener
      */
-    public void testCoachMarkClick() {
+    private void checkCoachMarkClick() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
@@ -144,10 +180,29 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         verify(mMockCoachMarkClickListener, times(2)).onClick(container);
     }
 
+    public void testCircleIsOverlayed_noAnimation() {
+        setupCoachmark(false);
+        checkCircleIsOverlayed(false);
+    }
+
+    public void testCircleIsOverlayed_animationCannotHappen() {
+        setupCoachmark(true);
+        // the target view is too small for the animation to happen so we just
+        // centre the punch hole on the target view
+        checkCircleIsOverlayed(false);
+    }
+
+    public void testCircleIsOverlayed_animationCanHappen() {
+        mTargetView = mActivity.findViewById(R.id.coach_mark_test_target_wide);
+        setupCoachmark(true);
+        // the target view is wide enough for the animation to happen
+        checkCircleIsOverlayed(true);
+    }
+
     /**
      * Test the location of punch hole to target view.
      */
-    public void testCircleIsOverlayed() {
+    private void checkCircleIsOverlayed(final boolean animationShouldHappen) {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
@@ -164,17 +219,36 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final int width = mTargetView.getWidth();
         final int height = mTargetView.getHeight();
 
-        final int expectedCircleX = targetScreenLoc[0] + (width / 2) - containerScreenLoc[0];
-        final int expectedCircleY = targetScreenLoc[1] + (height / 2) - containerScreenLoc[1];
         final float expectedCircleRadius = (height + diameterGap) / 2;
 
-        assertFalse(container.setCircle(expectedCircleX, expectedCircleY, expectedCircleRadius));
+        final int expectedCircleStartOffsetX = animationShouldHappen
+                ?  targetScreenLoc[0] + (int) expectedCircleRadius
+                : width / 2;
+        final int expectedCircleStartX = targetScreenLoc[0] + expectedCircleStartOffsetX - containerScreenLoc[0];
+        final int expectedCircleStartY = targetScreenLoc[1] + (height / 2) - containerScreenLoc[1];
+
+        // When the animation happens, the circle should not be in the start
+        // position. Unfortunately we can't test that it ever was in the right
+        // start position in this case as it starts moving when it's shown.
+        assertEquals(
+                animationShouldHappen,
+                container.setCircle(expectedCircleStartX, expectedCircleStartY, expectedCircleRadius));
+    }
+
+    public void testMessageLocatedAbove_noAnimation() {
+        setupCoachmark(false);
+        checkMessageLocatedAbove();
+    }
+
+    public void testMessageLocatedAbove_animation() {
+        setupCoachmark(true);
+        checkMessageLocatedAbove();
     }
 
     /**
      * Test that the message is shown above when target view located in bottom side.
      */
-    public void testMessageLoacatedAbove() {
+    private void checkMessageLocatedAbove() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
@@ -194,10 +268,20 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         assertTrue(relativeTextViewX < (height / 2));
     }
 
+    public void testMessageLocatedBelow_noAnimation() {
+        setupCoachmark(false);
+        checkMessageLocatedBelow();
+    }
+
+    public void testMessageLocatedBelow_animation() {
+        setupCoachmark(true);
+        checkMessageLocatedBelow();
+    }
+
     /**
      * Test that the message is shown below when target view located in top side.
      */
-    public void testMessageLoacatedBelow() {
+    private void checkMessageLocatedBelow() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
@@ -214,5 +298,15 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final int relativeTextViewX = textScreenLoc[1] - containerScreenLoc[1] + mTextView.getHeight() / 2;
 
         assertTrue(relativeTextViewX > (height / 2));
+    }
+
+    private void setupCoachmark(final boolean animation) {
+        mCoachMark = new PunchHoleCoachMark.PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
+                .setTargetView(mTargetView)
+                .setHorizontalTranslationDuration(animation ? 1000 : 0)
+                .setOnTargetClickListener(mMockTargetClickListener)
+                .setOnGlobalClickListener(mMockCoachMarkClickListener)
+                .setOverlayColor(OVERLAY_COLOR)
+                .build();
     }
 }

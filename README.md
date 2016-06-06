@@ -30,6 +30,19 @@ A translucent layer onto the particular view and "Punch Hole" for given child vi
 ./gradlew clean build test connectedAndroidTest
 ```
 
+### Proguard rules
+
+It's safe to use either `getDefaultProguardFile('proguard-android.txt')` or `getDefaultProguardFile('proguard-android-optimize.txt')`. CornedBeef uses the Android animator APIs which require reflection and can make some methods appear to be deadcode to proguard.
+
+Use the following explicit rule to make sure these APIs remain if you are experiencing problems with the PunchHoleCoachMark animations:
+
+```
+-keepclassmembers public class * extends android.view.View {
+   void set*(***);
+   *** get*();
+}
+```
+
 ## License
 
     Licensed under the Apache License, Version 2.0 (the "License");

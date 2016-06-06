@@ -86,18 +86,23 @@ public class PunchHoleView extends LinearLayout {
                 centerX - (int) radius, centerY - (int) radius,
                 centerX + (int) radius, centerY + (int) radius);
 
+        postInvalidate();
+
         return true;
     }
 
     /**
-     * Set the punch hole's x coordinate
+     * Set the punch hole's x coordinate.
+     *
+     * This needs to be public to do the horizontal translation animation.
      *
      * @param centerX circle's x coordinate
      * @return true if value is changed
      */
-    private boolean setCircleCenterX(int centerX) {
+    public boolean setCircleCenterX(int centerX) {
         if (this.mCircleCenterX != centerX) {
             this.mCircleCenterX = centerX;
+            postInvalidate();
             return true;
         } else {
             return false;
@@ -113,6 +118,7 @@ public class PunchHoleView extends LinearLayout {
     private boolean setCircleCenterY(int centerY) {
         if (this.mCircleCenterY != centerY) {
             this.mCircleCenterY = centerY;
+            postInvalidate();
             return true;
         } else {
             return false;
@@ -128,6 +134,7 @@ public class PunchHoleView extends LinearLayout {
     private boolean setCircleRadius(float radius) {
         if (this.mCircleRadius != radius) {
             this.mCircleRadius = radius;
+            postInvalidate();
             return true;
         } else {
             return false;

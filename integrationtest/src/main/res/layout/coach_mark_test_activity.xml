@@ -25,6 +25,14 @@
             android:layout_margin="10dp"
             android:background="@android:color/black"/>
 
+        <View
+            android:id="@+id/coach_mark_test_target_wide"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:background="@android:color/black"/>
+
     </LinearLayout>
 
 </LinearLayout>
