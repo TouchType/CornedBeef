@@ -1,6 +1,7 @@
 package com.swiftkey.cornedbeef;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
@@ -16,6 +17,10 @@ import com.swiftkey.cornedbeef.test.SpamActivity;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static com.swiftkey.cornedbeef.PunchHoleCoachMark.POSITION_CONTENT_ABOVE;
+import static com.swiftkey.cornedbeef.PunchHoleCoachMark.POSITION_CONTENT_AUTOMATICALLY;
+import static com.swiftkey.cornedbeef.PunchHoleCoachMark.PunchHoleCoachMarkBuilder;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.moveTargetView;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
@@ -245,29 +250,6 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         checkMessageLocatedAbove();
     }
 
-    /**
-     * Test that the message is shown above when target view located in bottom side.
-     */
-    private void checkMessageLocatedAbove() {
-        showCoachMark(getInstrumentation(), mCoachMark);
-
-        final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
-
-        moveTargetView(getInstrumentation(), mTargetView,
-                0, container.getHeight() - mTargetView.getHeight()); // Move target view to bottom
-
-        // Get the coach mark and textview's coordinates of location on screen
-        int[] containerScreenLoc = new int[2];
-        container.getLocationOnScreen(containerScreenLoc);
-        int[] textScreenLoc = new int[2];
-        mTextView.getLocationOnScreen(textScreenLoc);
-
-        final int height = container.getHeight();
-        final int relativeTextViewX = textScreenLoc[1] - containerScreenLoc[1] + mTextView.getHeight() / 2;
-
-        assertTrue(relativeTextViewX < (height / 2));
-    }
-
     public void testMessageLocatedBelow_noAnimation() {
         setupCoachmark(false);
         checkMessageLocatedBelow();
@@ -276,6 +258,20 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
     public void testMessageLocatedBelow_animation() {
         setupCoachmark(true);
         checkMessageLocatedBelow();
+    }
+
+    public void testLayoutParamsAreSet() {
+        final int contentWidth = 10;
+        final int contentHeight = 20;
+        mCoachMark = new PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
+                .setTargetView(mTargetView)
+                .setContentLayoutParams(contentWidth, contentHeight, POSITION_CONTENT_ABOVE)
+                .build();
+
+        checkMessageLocatedAbove();
+
+        assertEquals(contentWidth, mTextView.getLayoutParams().width);
+        assertEquals(contentHeight, mTextView.getLayoutParams().height);
     }
 
     /**
@@ -287,26 +283,56 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
 
         moveTargetView(getInstrumentation(), mTargetView, 0, 0); // Move target view to top
+        checkMessageIsOnTheCorrectSide(container, 1);
+    }
+
+    /**
+     * Test that the message is shown above when target view located in bottom side.
+     */
+    private void checkMessageLocatedAbove() {
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
+
+        // Move target view to bottom
+        moveTargetView(
+                getInstrumentation(),
+                mTargetView,
+                0,
+                container.getHeight() - mTargetView.getHeight());
+
+        checkMessageIsOnTheCorrectSide(container, -1);
+    }
+
+    private Rect getRectFromPositionOnScreen(final View view) {
+        int[] xy = new int[2];
+        view.getLocationOnScreen(xy);
+        return new Rect(xy[0], xy[1], xy[0] + view.getWidth(), xy[1] + view.getHeight());
+    }
+
+    private void checkMessageIsOnTheCorrectSide(
+            final View container, final int expectedSide) {
 
         // Get the coach mark and textview's coordinates of location on screen
-        int[] containerScreenLoc = new int[2];
-        container.getLocationOnScreen(containerScreenLoc);
-        int[] textScreenLoc = new int[2];
-        mTextView.getLocationOnScreen(textScreenLoc);
+        Rect containerCoords = getRectFromPositionOnScreen(container);
+        Rect textViewCoords = getRectFromPositionOnScreen(mTextView);
+        Rect targetCoords = getRectFromPositionOnScreen(mTargetView);
 
-        final int height = container.getHeight();
-        final int relativeTextViewX = textScreenLoc[1] - containerScreenLoc[1] + mTextView.getHeight() / 2;
-
-        assertTrue(relativeTextViewX > (height / 2));
+        Rect intersection = new Rect(textViewCoords);
+        assertFalse(intersection.intersect(targetCoords));
+        assertEquals(
+                expectedSide,
+                ((Integer)textViewCoords.centerY()).compareTo(containerCoords.centerY()));
     }
 
     private void setupCoachmark(final boolean animation) {
-        mCoachMark = new PunchHoleCoachMark.PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
+        mCoachMark = new PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
                 .setTargetView(mTargetView)
                 .setHorizontalTranslationDuration(animation ? 1000 : 0)
                 .setOnTargetClickListener(mMockTargetClickListener)
                 .setOnGlobalClickListener(mMockCoachMarkClickListener)
                 .setOverlayColor(OVERLAY_COLOR)
+                .setContentLayoutParams(MATCH_PARENT, MATCH_PARENT, POSITION_CONTENT_AUTOMATICALLY)
                 .build();
     }
 }
