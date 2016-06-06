@@ -118,9 +118,10 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
     }
 
     /**
-     * Move the punch hole from left to right of the target view, unless the
-     * width of the target view is smaller than the diameter of the punch hole
-     * in which case the circle will be centered and the animation is pointless.
+     * Move the punch hole from start to end of the target view and back from
+     * end to start, unless the width of the target view is smaller than the
+     * diameter of the punch hole in which case the circle will be centered and
+     * the animation is pointless.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void animateHorizontalTranslation() {
