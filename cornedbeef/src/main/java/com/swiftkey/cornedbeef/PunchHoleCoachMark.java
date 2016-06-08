@@ -7,21 +7,47 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static android.view.ViewGroup.LayoutParams.*;
 
 /**
  * The coach mark for a "punch hole" to present a transparent circle onto the given view.
  */
 public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
 
+    @IntDef({POSITION_CONTENT_AUTOMATICALLY, POSITION_CONTENT_ABOVE, POSITION_CONTENT_BELOW})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PunchMarkContentPosition {}
+
+    /**
+     * Decide whether to place the content above or below the punch hole at runtime depending on
+     * which side has the most space available
+     */
+    public static final int POSITION_CONTENT_AUTOMATICALLY = 0;
+    /**
+     * Position the coach mark content above the punch hole
+     */
+    public static final int POSITION_CONTENT_ABOVE = 1;
+    /**
+     * Position the coach mark content below the punch hole
+     */
+    public static final int POSITION_CONTENT_BELOW = 2;
+
     private final float mGap;
     private final long mHorizontalTranslationDuration;
+    private final int mContentPosition;
 
     private final View mTargetView;
     private final int[] mTargetViewLoc = new int[2];
@@ -29,6 +55,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
     private float mRelCircleRadius;
 
     private PunchHoleView mPunchHoleView;
+    private View mPunchHoleContent;
     private Interpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
     private AnimatorSet mHorizontalAnimators;
 
@@ -43,26 +70,30 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         mPunchHoleView.setOnGlobalClickListener(builder.globalClickListener);
         mPunchHoleView.setBackgroundColor(builder.overlayColor);
 
+        mPunchHoleContent.setLayoutParams(
+                new LinearLayout.LayoutParams(builder.contentWidth, builder.contentHeight));
+
         mHorizontalTranslationDuration = builder.horizontalAnimationDuration;
+
+        mContentPosition = builder.contentPositioning;
     }
 
     @Override
     protected View createContentView(View content) {
         final PunchHoleView view = (PunchHoleView) LayoutInflater.from(mContext)
                 .inflate(R.layout.punchhole_coach_mark, null);
+
         view.addView(content);
 
         mPunchHoleView = view;
+        mPunchHoleContent = content;
 
         return view;
     }
 
     @Override
     protected PopupWindow createNewPopupWindow(View contentView) {
-        PopupWindow popup = new PopupWindow(
-                contentView,
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
+        PopupWindow popup = new PopupWindow(contentView, WRAP_CONTENT, WRAP_CONTENT);
         popup.setTouchable(true);
         return popup;
     }
@@ -101,20 +132,29 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         }
 
         // Calculating the proper padding of layout
-        int upperGap = 0;
-        int lowerGap = 0;
-        if (relCircleY < (mAnchor.getHeight() / 2)) { // Circle in upper side
-            upperGap = (int) (relCircleY + mRelCircleRadius);
+        int positioning = mContentPosition;
+
+        if (mContentPosition == POSITION_CONTENT_AUTOMATICALLY) {
+            positioning = relCircleY < (mAnchor.getHeight() / 2) ?
+                    POSITION_CONTENT_BELOW : POSITION_CONTENT_ABOVE;
+        }
+
+        int upperPadding = 0;
+        int lowerPadding = 0;
+
+        if (positioning == POSITION_CONTENT_BELOW) {
+            // Circle in upper side
+            upperPadding = (int) (relCircleY + mRelCircleRadius);
         } else {
             // Circle in lower side
-            lowerGap = (int) (relCircleY - mRelCircleRadius);
+            lowerPadding = mAnchor.getHeight() - (int) (relCircleY - mRelCircleRadius);
         }
 
         int horizontalPadding = (int) mContext.getResources().getDimension(R.dimen.punchhole_coach_mark_horizontal_padding);
         int verticalPadding = (int) mContext.getResources().getDimension(R.dimen.punchhole_coach_mark_vertical_padding);
         mPunchHoleView.setPadding(
-                horizontalPadding, verticalPadding + upperGap,
-                horizontalPadding, verticalPadding + lowerGap);
+                horizontalPadding, verticalPadding + upperPadding,
+                horizontalPadding, verticalPadding + lowerPadding);
     }
 
     /**
@@ -181,6 +221,15 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         protected View.OnClickListener globalClickListener;
 
         protected long horizontalAnimationDuration;
+        private int contentPositioning = POSITION_CONTENT_AUTOMATICALLY;
+        /**
+         * Default layout parameters for {@link LinearLayout}, from which {@link PunchHoleView}
+         * inherits
+         *
+         * @see LinearLayout#generateDefaultLayoutParams()
+         */
+        private int contentWidth = MATCH_PARENT;
+        private int contentHeight = WRAP_CONTENT;
 
         public PunchHoleCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
@@ -231,6 +280,26 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
          */
         public PunchHoleCoachMarkBuilder setOverlayColor(int overlayColor) {
             this.overlayColor = overlayColor;
+            return this;
+        }
+
+        /**
+         * Set the layout information for the content inside the coach mark, allowing explicit
+         * placement and sizing of the content with respect to the punch hole
+         *
+         * @param contentWidth the width of the content - defaults to {@link MATCH_PARENT}
+         * @param contentHeight the height of the content - defaults to {@link WRAP_CONTENT}
+         * @param contentPositioning where to place the content - defaults to
+         *  {@link POSITION_CONTENT_AUTOMATICALLY}
+         */
+        public PunchHoleCoachMarkBuilder setContentLayoutParams(
+                final int contentWidth,
+                final int contentHeight,
+                @PunchMarkContentPosition final int contentPositioning) {
+
+            this.contentWidth = contentWidth;
+            this.contentHeight = contentHeight;
+            this.contentPositioning = contentPositioning;
             return this;
         }
 
