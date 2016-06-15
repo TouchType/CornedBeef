@@ -31,7 +31,8 @@ public class PunchHoleView extends LinearLayout {
         super(context, attrs);
 
         mPaint = new Paint();
-        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        mPaint.setAntiAlias(true);
+        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     }
 
     @Override
