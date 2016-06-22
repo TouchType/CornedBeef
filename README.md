@@ -43,6 +43,10 @@ Use the following explicit rule to make sure these APIs remain if you are experi
 }
 ```
 
+## Code of conduct
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments
+
 ## License
 
     Licensed under the Apache License, Version 2.0 (the "License");
