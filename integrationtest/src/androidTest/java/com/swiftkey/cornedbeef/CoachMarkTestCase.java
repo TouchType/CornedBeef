@@ -10,11 +10,13 @@ import android.widget.PopupWindow;
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import static com.swiftkey.cornedbeef.CoachMark.OnShowListener;
 import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
+import static com.swiftkey.cornedbeef.CoachMark.OnTimeoutListener;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
@@ -119,24 +121,121 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         showCoachMark(getInstrumentation(), mCoachMark);
         dismissCoachMark(getInstrumentation(), mCoachMark);
         
-        verify(mockListener, times(1)).onDismiss();
+        verify(mockListener).onDismiss();
     }
-    
+
+    /**
+     * Verify that onTimeout is called when coach mark's timeout expired
+     * @throws InterruptedException
+     */
+    public void testOnTimeoutCalled() throws InterruptedException {
+        final long timeout = 50;
+        final OnTimeoutListener mockListener = mock(OnTimeoutListener.class);
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, mAnchor, "spam spam spam")
+                .setOnTimeoutListener(mockListener)
+                .setTimeout(timeout)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        // Wait until timeout
+        Thread.sleep(timeout);
+
+        verify(mockListener).onTimeout();
+    }
+
+    /**
+     * Verify that onTimeout and onDismiss is called when coach mark's timeout expired
+     * and the coach mark dismissed
+     * @throws InterruptedException
+     */
+    public void testOnTimeoutAndOnDismissCalled() throws InterruptedException {
+        final long timeout = 50;
+        final OnTimeoutListener mockOnTimeoutListener = mock(OnTimeoutListener.class);
+        final OnDismissListener mockOnDismissListener = mock(OnDismissListener.class);
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, mAnchor, "spam spam spam")
+                .setOnTimeoutListener(mockOnTimeoutListener)
+                .setOnDismissListener(mockOnDismissListener)
+                .setTimeout(timeout)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        // Wait until timeout
+        Thread.sleep(timeout);
+
+        verify(mockOnTimeoutListener).onTimeout();
+        verify(mockOnDismissListener).onDismiss();
+    }
+
+    /**
+     * Verify that onDismiss is called and onTimeout not called
+     * when explicitly dismiss() method called before timeout expired
+     * @throws InterruptedException
+     */
+    public void testOnDismissCalledAndOnTimeoutNotCalled() throws InterruptedException {
+        final long timeout = 1000; // Should give the enough time for dismiss
+        final OnTimeoutListener mockOnTimeoutListener = mock(OnTimeoutListener.class);
+        final OnDismissListener mockOnDismissListener = mock(OnDismissListener.class);
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, mAnchor, "spam spam spam")
+                .setOnTimeoutListener(mockOnTimeoutListener)
+                .setOnDismissListener(mockOnDismissListener)
+                .setTimeout(timeout)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+        dismissCoachMark(getInstrumentation(), mCoachMark);
+
+        verify(mockOnTimeoutListener, never()).onTimeout();
+        verify(mockOnDismissListener).onDismiss();
+    }
+
     /**
      * Verify that onShow is called when coach mark is shown
      * @throws InterruptedException 
      */
     public void testOnShowCalled() throws InterruptedException {
-        final CoachMark.OnShowListener mockListener = mock(CoachMark.OnShowListener.class);
+        final OnShowListener mockListener = mock(OnShowListener.class);
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam")
                 .setOnShowListener(mockListener).build();
         
         showCoachMark(getInstrumentation(), mCoachMark);
         
-        verify(mockListener, times(1)).onShow();
+        verify(mockListener).onShow();
     }
-    
+
+    /**
+     * Verify that onShow, onTimeout and onDismiss is called when coach mark's timeout expired
+     * and the coach mark dismissed
+     * @throws InterruptedException
+     */
+    public void testAllListenerCalled() throws InterruptedException {
+        final long timeout = 50;
+        final OnShowListener mockOnShowListener = mock(OnShowListener.class);
+        final OnTimeoutListener mockOnTimeoutListener = mock(OnTimeoutListener.class);
+        final OnDismissListener mockOnDismissListener = mock(OnDismissListener.class);
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, mAnchor, "spam spam spam")
+                .setOnShowListener(mockOnShowListener)
+                .setOnTimeoutListener(mockOnTimeoutListener)
+                .setOnDismissListener(mockOnDismissListener)
+                .setTimeout(timeout)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        // Wait until timeout
+        Thread.sleep(timeout);
+
+        verify(mockOnShowListener).onShow();
+        verify(mockOnTimeoutListener).onTimeout();
+        verify(mockOnDismissListener).onDismiss();
+    }
+
     /*
      * HELPERS
      */
