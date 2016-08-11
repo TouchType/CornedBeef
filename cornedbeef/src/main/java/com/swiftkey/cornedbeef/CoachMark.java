@@ -33,13 +33,38 @@ import android.widget.TextView;
 public abstract class CoachMark {
 
     public static final int NO_ANIMATION = 0;
-    
+
+    /**
+     * Interface used to allow the creator of a coach mark to run some code when the
+     * coach mark is dismissed.
+     */
     public interface OnDismissListener {
+        /**
+         * This method will be invoked when the coach mark is dismissed.
+         */
         void onDismiss();
     }
-    
-    public interface OnShowListener{
+
+    /**
+     * Interface used to allow the creator of a coach mark to run some code when the
+     * coach mark is shown.
+     */
+    public interface OnShowListener {
+        /**
+         * This method will be invoked when the coach mark is shown.
+         */
         void onShow();
+    }
+
+    /**
+     * Interface used to allow the creator of a coach mark to run some code when the
+     * coach mark's given timeout is expired.
+     */
+    public interface OnTimeoutListener {
+        /**
+         * This method will be invoked when the coach mark's given timeout is expired.
+         */
+        void onTimeout();
     }
     
     protected final PopupWindow mPopup;
@@ -51,6 +76,7 @@ public abstract class CoachMark {
     private final OnPreDrawListener mPreDrawListener;
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
+    private final OnTimeoutListener mTimeoutListener;
     private final long mTimeoutInMs;
 
     protected Rect mDisplayFrame;
@@ -61,6 +87,7 @@ public abstract class CoachMark {
         mTimeoutInMs = builder.timeout;
         mDismissListener = builder.dismissListener;
         mShowListener = builder.showListener;
+        mTimeoutListener = builder.timeoutListener;
         mTokenView = builder.tokenView != null ? builder.tokenView : mAnchor;
         mPadding = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, builder.padding, 
@@ -122,6 +149,9 @@ public abstract class CoachMark {
                 @Override
                 public void run() {
                     if(mPopup.isShowing()) {
+                        if (mTimeoutListener != null) {
+                            mTimeoutListener.onTimeout();
+                        }
                         dismiss();
                     }
                 }
@@ -144,12 +174,12 @@ public abstract class CoachMark {
         mAnchor.destroyDrawingCache();
         mAnchor.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
         mPopup.dismiss();
-        
+
         if (mDismissListener != null) {
             mDismissListener.onDismiss();
         }
     }
-    
+
     /**
      * Exposes the {@link PopupWindow#getContentView()} method of {@link CoachMark#mPopup}
      */
@@ -268,7 +298,8 @@ public abstract class CoachMark {
         protected int animationStyle = R.style.CoachMarkAnimation;
         protected View tokenView;
         protected OnShowListener showListener;
-        
+        protected OnTimeoutListener timeoutListener;
+
         public CoachMarkBuilder(Context context, View anchor, String message) {
             this(context, anchor, new TextView(context));
             ((TextView) content).setTextColor(Color.WHITE);
@@ -332,7 +363,20 @@ public abstract class CoachMark {
             this.dismissListener = listener;
             return this;
         }
-        
+
+        /**
+         * Set an {@link CoachMark.OnTimeoutListener} to be called when the
+         * coach mark's display timeout has been expired
+         *
+         * This listener will be called before the coach mark dismissed
+         *
+         * @param listener the timeout listener
+         */
+        public CoachMarkBuilder setOnTimeoutListener(OnTimeoutListener listener) {
+            this.timeoutListener = listener;
+            return this;
+        }
+
         /**
          * Set which animation will be used when displaying/hiding the coach mark
          * 
