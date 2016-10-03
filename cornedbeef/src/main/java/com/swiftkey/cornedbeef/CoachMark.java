@@ -79,6 +79,8 @@ public abstract class CoachMark {
     private final OnTimeoutListener mTimeoutListener;
     private final long mTimeoutInMs;
 
+    private Runnable mTimeoutDismissRunnable;
+
     protected Rect mDisplayFrame;
     
     protected CoachMark(CoachMarkBuilder builder) {
@@ -144,8 +146,7 @@ public abstract class CoachMark {
 
         // Dismiss coach mark after the timeout has passed if it is greater than 0.
         if (mTimeoutInMs > 0) {
-            getContentView().postDelayed(new Runnable() {
-
+            mTimeoutDismissRunnable = new Runnable() {
                 @Override
                 public void run() {
                     if(mPopup.isShowing()) {
@@ -155,12 +156,13 @@ public abstract class CoachMark {
                         dismiss();
                     }
                 }
-            }, mTimeoutInMs);
+            };
+            getContentView().postDelayed(mTimeoutDismissRunnable, mTimeoutInMs);
         }
 
         mPopup.setWidth(popupDimens.width);
         mPopup.showAtLocation(mTokenView, Gravity.NO_GRAVITY, popupDimens.x, popupDimens.y);
-        
+
         mAnchor.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
         if (mShowListener != null) {
             mShowListener.onShow();
@@ -173,6 +175,7 @@ public abstract class CoachMark {
     public void dismiss() {
         mAnchor.destroyDrawingCache();
         mAnchor.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+        mPopup.getContentView().removeCallbacks(mTimeoutDismissRunnable);
         mPopup.dismiss();
 
         if (mDismissListener != null) {
