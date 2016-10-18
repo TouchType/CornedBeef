@@ -2,6 +2,7 @@
     <string name="app_name">CornedBeef</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="highlight_me">Highlight me!</string>
 
     <string name="punchhole_message_text">Enable the emoji predictions</string>
 
