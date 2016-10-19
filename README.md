@@ -24,6 +24,8 @@ A translucent layer onto the particular view, or sub-region. Layered coach marks
 
 A translucent layer onto the particular view and "Punch Hole" for given child view component. The target child view should be within the parent view to properly located the hole. PunchHole coach marks can include a simple message or a fully customisable view where upper or lower side of the hole. 
 
+![screenshot of examples](screenshots/coachmarks.png)
+
 ### Building and running the tests
 
 ```

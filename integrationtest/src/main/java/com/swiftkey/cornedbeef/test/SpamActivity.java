@@ -35,6 +35,7 @@ public class SpamActivity extends Activity {
         final Context context = getApplicationContext();
 
         final View anchorTextView = findViewById(R.id.hello_world);
+        final View anchorTextViewForHighlight = findViewById(R.id.highlight_target);
         final View anchorLinearLayoutHoldButton = findViewById(R.id.anchor_with_button);
         final View anchorEmptyLinearLayout = findViewById(R.id.empty_anchor);
 
@@ -58,7 +59,7 @@ public class SpamActivity extends Activity {
                 .build();
 
         mHighlightCoachMark = new HighlightCoachMark.HighlightCoachMarkBuilder(
-                context, anchorTextView).build();
+                context, anchorTextViewForHighlight).build();
 
         // Prepare the sample PunchHoleCoachMark
         TextView punchholeContent = (TextView) LayoutInflater.from(context).inflate(R.layout.sample_customised_punchhole_content, null);
