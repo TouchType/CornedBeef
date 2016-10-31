@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StyleRes;
 import android.util.TypedValue;
@@ -16,6 +17,9 @@ import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A CoachMark is a temporary popup that can be positioned above a {@link View}
@@ -31,6 +35,15 @@ import android.widget.TextView;
  * 
  */
 public abstract class CoachMark {
+
+    @IntDef({COACHMARK_PUNCHHOLE, COACHMARK_LAYERED, COACHMARK_HIGHLIGHT, COACHMARK_BUBBLE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CoachmarkType {}
+
+    public static final int COACHMARK_PUNCHHOLE = 0;
+    public static final int COACHMARK_LAYERED = 1;
+    public static final int COACHMARK_HIGHLIGHT = 2;
+    public static final int COACHMARK_BUBBLE = 3;
 
     public static final int NO_ANIMATION = 0;
 
