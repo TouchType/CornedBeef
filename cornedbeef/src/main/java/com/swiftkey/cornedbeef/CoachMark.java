@@ -392,8 +392,7 @@ public abstract class CoachMark {
          * Set how much padding there should be between the left and right edges
          * of the coach mark and the screen
          * 
-         * @param padding
-         *      the amount of left/right padding in px
+         * @param padding the amount of left/right padding in density-independent pixels (dip)
          */
         public CoachMarkBuilder setPadding(int padding) {
             this.padding = padding;
@@ -404,7 +403,7 @@ public abstract class CoachMark {
          * Set an {@link CoachMark.OnDismissListener} to be called when the
          * coach mark is dismissed
          * 
-         * @param listener
+         * @param listener the onDismissListener
          */
         public CoachMarkBuilder setOnDismissListener(OnDismissListener listener) {
             this.dismissListener = listener;
