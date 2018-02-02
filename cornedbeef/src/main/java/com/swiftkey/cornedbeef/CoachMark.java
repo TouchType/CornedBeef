@@ -166,7 +166,12 @@ public abstract class CoachMark {
                         if (mTimeoutListener != null) {
                             mTimeoutListener.onTimeout();
                         }
-                        dismiss();
+                        try {
+                            dismiss();
+                        } catch(IllegalArgumentException e) {
+                            // Closes #19 - popup has already been removed outside of CornedBeef's
+                            // control
+                        }
                     }
                 }
             };
@@ -189,6 +194,7 @@ public abstract class CoachMark {
         mAnchor.destroyDrawingCache();
         mAnchor.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
         mPopup.getContentView().removeCallbacks(mTimeoutDismissRunnable);
+
         mPopup.dismiss();
 
         if (mDismissListener != null) {
