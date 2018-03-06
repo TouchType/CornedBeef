@@ -79,6 +79,7 @@ public class SpamActivity extends Activity {
                         Toast.makeText(context, "The coach mark clicked!", Toast.LENGTH_SHORT).show();
                     }
                 })
+                .setPunchHolePadding(5)
                 .setTimeout(0)
                 .build();
 

@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.test.ViewAsserts;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -43,6 +44,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
 
     private TextView mTextView;
     private static final String MESSAGE = "spam spam spam";
+    private static final int PADDING = 10;
     private final int OVERLAY_COLOR = Color.BLACK;
 
     public PunchHoleCoachMarkTestCase() {
@@ -224,7 +226,11 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final int width = mTargetView.getWidth();
         final int height = mTargetView.getHeight();
 
-        final float expectedCircleRadius = (height + diameterGap) / 2;
+        final int expectedPadding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                PADDING,
+                mActivity.getResources().getDisplayMetrics());
+        final float expectedCircleRadius = ((height + diameterGap) / 2) + expectedPadding;
 
         final int expectedCircleStartOffsetX = animationShouldHappen
                 ?  targetScreenLoc[0] + (int) expectedCircleRadius
@@ -333,6 +339,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
                 .setOnGlobalClickListener(mMockCoachMarkClickListener)
                 .setOverlayColor(OVERLAY_COLOR)
                 .setContentLayoutParams(MATCH_PARENT, MATCH_PARENT, POSITION_CONTENT_AUTOMATICALLY)
+                .setPunchHolePadding(PADDING)
                 .build();
     }
 }

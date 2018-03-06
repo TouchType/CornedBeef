@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.LayoutRes;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -48,6 +49,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
     private final float mGap;
     private final long mHorizontalTranslationDuration;
     private final int mContentPosition;
+    private final int mPunchHolePadding;
 
     private final View mTargetView;
     private final int[] mTargetViewLoc = new int[2];
@@ -76,6 +78,11 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         mHorizontalTranslationDuration = builder.horizontalAnimationDuration;
 
         mContentPosition = builder.contentPositioning;
+
+        mPunchHolePadding = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                builder.punchHolePadding,
+                mContext.getResources().getDisplayMetrics());
     }
 
     @Override
@@ -109,7 +116,7 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
 
         mTargetView.getLocationOnScreen(mTargetViewLoc);
         mAnchor.getLocationOnScreen(mAnchorViewLoc);
-        mRelCircleRadius = (mTargetView.getHeight() + mGap) / 2;
+        mRelCircleRadius = Math.max(((mTargetView.getHeight() + mGap) / 2) + mPunchHolePadding, 0f);
 
         // If the coachmark has an horizontal translation animation, draw the
         // circle on the start of the target view (it will move to the end).
@@ -231,6 +238,8 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
         private int contentWidth = MATCH_PARENT;
         private int contentHeight = WRAP_CONTENT;
 
+        private int punchHolePadding = 0;
+
         public PunchHoleCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
         }
@@ -317,6 +326,20 @@ public class PunchHoleCoachMark extends InternallyAnchoredCoachMark {
             }
 
             this.horizontalAnimationDuration = horizontalDuration;
+            return this;
+        }
+
+        /**
+         * Set the padding for the punch hole around the anchor view in density-independent
+         * pixels (dip).
+         *
+         * A positive value will increase the punch hole's radius and a negative value will
+         * decrease the punch hole's radius.
+         *
+         * @param punchHolePadding the padding to be added to the punch hole in dip
+         */
+        public PunchHoleCoachMarkBuilder setPunchHolePadding(final int punchHolePadding) {
+            this.punchHolePadding = punchHolePadding;
             return this;
         }
 
