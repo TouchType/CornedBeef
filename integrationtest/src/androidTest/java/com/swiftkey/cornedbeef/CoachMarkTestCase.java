@@ -5,13 +5,14 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
-import static com.swiftkey.cornedbeef.CoachMark.OnShowListener;
 import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
+import static com.swiftkey.cornedbeef.CoachMark.OnShowListener;
 import static com.swiftkey.cornedbeef.CoachMark.OnTimeoutListener;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
@@ -107,7 +108,52 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         
         assertFalse(mCoachMark.isShowing());
     }
-    
+
+    /**
+     * Test that the popup disappears after the anchor view detaches if specified in the builder
+     */
+    public void testDismissAfterAnchorDetach() throws InterruptedException {
+        checkSetDismissOnAnchorDetach(true);
+        checkSetDismissOnAnchorDetach(false);
+    }
+
+    /**
+     * Helper method used in testDismissAfterAnchorDetach
+     *
+     * @param shouldAutoDismissOnDetach whether we should auto dismiss the coach mark
+     * @throws InterruptedException
+     */
+    private void checkSetDismissOnAnchorDetach(boolean shouldAutoDismissOnDetach) throws InterruptedException {
+        final View anchorView = new View(mActivity);
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                mActivity.setContentView(anchorView);
+            }
+        });
+
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, anchorView, "spam spam spam")
+                .setDismissOnAnchorDetach(shouldAutoDismissOnDetach).build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                mActivity.setContentView(R.layout.coach_mark_test_activity);
+            }
+        });
+
+        if (shouldAutoDismissOnDetach) {
+            assertFalse(mCoachMark.isShowing());
+        } else {
+            assertTrue(mCoachMark.isShowing());
+        }
+    }
+
     /**
      * Verify that onDismiss is called when coach mark is dismissed
      * @throws InterruptedException 
