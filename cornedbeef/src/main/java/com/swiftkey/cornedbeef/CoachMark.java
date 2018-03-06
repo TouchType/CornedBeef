@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.PopupWindow;
@@ -89,8 +90,10 @@ public abstract class CoachMark {
     private final OnPreDrawListener mPreDrawListener;
     private final OnDismissListener mDismissListener;
     private final OnShowListener mShowListener;
+    private final OnAttachStateChangeListener mOnAttachStateChangeListener;
     private final OnTimeoutListener mTimeoutListener;
     private final long mTimeoutInMs;
+    private final boolean mShouldDismissOnAnchorDetach;
 
     private Runnable mTimeoutDismissRunnable;
 
@@ -107,6 +110,7 @@ public abstract class CoachMark {
         mPadding = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, builder.padding, 
                 mContext.getResources().getDisplayMetrics());
+        mShouldDismissOnAnchorDetach = builder.shouldDismissOnAnchorDetach;
 
         // Create the coach mark view
         View view = createContentView(builder.content);
@@ -119,6 +123,7 @@ public abstract class CoachMark {
         mPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         mPreDrawListener = new CoachMarkPreDrawListener();
+        mOnAttachStateChangeListener = new CoachMarkOnAttachStateChangeListener();
     }
     
     /**
@@ -185,6 +190,7 @@ public abstract class CoachMark {
         if (mShowListener != null) {
             mShowListener.onShow();
         }
+        mAnchor.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
     }
 
     /**
@@ -192,6 +198,7 @@ public abstract class CoachMark {
      */
     public void dismiss() {
         mAnchor.destroyDrawingCache();
+        mAnchor.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
         mAnchor.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
         mPopup.getContentView().removeCallbacks(mTimeoutDismissRunnable);
 
@@ -244,7 +251,24 @@ public abstract class CoachMark {
             return true;
         }
     }
-    
+
+    /**
+     * Listener may be used to dismiss the coach mark when its anchor detaches
+     */
+    protected class CoachMarkOnAttachStateChangeListener implements OnAttachStateChangeListener {
+
+        @Override
+        public void onViewAttachedToWindow(View view) {
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(View view) {
+            if (mShouldDismissOnAnchorDetach) {
+                dismiss();
+            }
+        }
+    }
+
     /**
      * Listener may be used to dismiss the coach mark when it is touched
      */
@@ -321,6 +345,7 @@ public abstract class CoachMark {
         protected View tokenView;
         protected OnShowListener showListener;
         protected OnTimeoutListener timeoutListener;
+        protected boolean shouldDismissOnAnchorDetach = true;
 
         public CoachMarkBuilder(Context context, View anchor, String message) {
             this(context, anchor, new TextView(context));
@@ -418,6 +443,16 @@ public abstract class CoachMark {
          */
         public CoachMarkBuilder setOnShowListener(OnShowListener listener) {
             this.showListener = listener;
+            return this;
+        }
+
+        /**
+         * Set whether the coach mark should dismiss itself when the anchor view detaches
+         *
+         * @param shouldDismissOnAnchorDetach whether or not to dismiss on anchor detach
+         */
+        public CoachMarkBuilder setDismissOnAnchorDetach(boolean shouldDismissOnAnchorDetach) {
+            this.shouldDismissOnAnchorDetach = shouldDismissOnAnchorDetach;
             return this;
         }
 
