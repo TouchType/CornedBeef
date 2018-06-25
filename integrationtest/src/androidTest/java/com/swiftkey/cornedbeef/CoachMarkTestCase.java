@@ -282,6 +282,19 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         verify(mockOnDismissListener).onDismiss();
     }
 
+    /**
+     * Test coach mark focusable.
+     */
+    public void testViewsFocusable() {
+        mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
+                mActivity, mAnchor, "spam spam spam").build();
+        showCoachMark(getInstrumentation(), mCoachMark);
+        mCoachMark.setFocusable(true);
+        assertTrue(mCoachMark.isFocusable());
+        mCoachMark.setFocusable(false);
+        assertFalse(mCoachMark.isFocusable());
+    }
+
     /*
      * HELPERS
      */
