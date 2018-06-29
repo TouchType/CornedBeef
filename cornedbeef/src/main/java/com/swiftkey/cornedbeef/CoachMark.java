@@ -222,6 +222,33 @@ public abstract class CoachMark {
     public boolean isShowing() {
         return mPopup.isShowing();
     }
+
+    /**
+     * Exposes the {@link PopupWindow#setFocusable(boolean)} method of {@link CoachMark#mPopup}
+     *
+     * Set whether the coach mark is focusable or not
+     * If we set the coach mark focusable, the behaviour changes as follows:
+     * For Explore-by-Touch mode
+     *   1. Outside of this coach mark becomes un-touchable
+     *   2. The coach mark can be dismissed by pressing the hardware back button
+     *   3. Focus can only be traversed through elements inside the coach mark area
+     * For Non Explore-by-Touch mode
+     *   1. Touching outside the coach mark will dismiss it
+     *      This doesn't apply to HighlightCoachMarks, as they always have touchable set to false
+     *   2. The coach mark can be dismissed by pressing the hardware back button
+     *
+     * @param focusable whether or not this coach mark can be focused
+     */
+    public void setFocusable(boolean focusable) {
+        mPopup.setFocusable(focusable);
+    }
+
+    /**
+     * Exposes the {@link PopupWindow#isFocusable()} method of {@link CoachMark#mPopup}
+     */
+    public boolean isFocusable() {
+        return mPopup.isFocusable();
+    }
     
     /**
      * Get the visible display size of the window this view is attached to
