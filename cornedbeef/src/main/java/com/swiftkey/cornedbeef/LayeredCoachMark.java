@@ -1,12 +1,13 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import androidx.annotation.LayoutRes;
 
 /**
  * The coach mark to layer for anchor view.

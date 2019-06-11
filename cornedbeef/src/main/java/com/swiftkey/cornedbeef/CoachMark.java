@@ -5,9 +5,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.IntDef;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.StyleRes;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +15,10 @@ import android.view.View.OnTouchListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
