@@ -1,7 +1,6 @@
 package com.swiftkey.cornedbeef;
 
 import android.os.SystemClock;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,29 +9,38 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.test.rule.ActivityTestRule;
+
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.moveAnchor;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.waitUntilStatusBarHidden;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class
-        BubbleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
+public class BubbleCoachMarkTestCase {
 
     private SpamActivity mActivity;
     private CoachMark mCoachMark;
     private View mAnchor;
-    
-    public BubbleCoachMarkTestCase() {
-        super(SpamActivity.class);
-    }
-    
-    public void setUp() throws Exception {
-        super.setUp();
 
-        mActivity = getActivity();
+    @Rule
+    public ActivityTestRule<SpamActivity> mActivityRule =
+            new ActivityTestRule<>(SpamActivity.class, false, true);
+
+    @Before
+    public void setUp() {
+        mActivity = mActivityRule.getActivity();
         
         getInstrumentation().runOnMainSync(new Runnable() {
             
@@ -50,18 +58,19 @@ public class
         
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(mActivity, mAnchor, "spam spam spam").build();
     }
-    
-    public void tearDown() throws Exception {
+
+    @After
+    public void tearDown() {
         dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
         mActivity = null;
-        super.tearDown();
     }
 
     /**
      * Test that the popup is shown above the anchor when there is room to do so
      */
+    @Test
     public void testShowPopupAbove() {
         final View topArrow;
         final View bottomArrow;
@@ -92,6 +101,7 @@ public class
     /**
      * Test that the popup is shown below the anchor when there is no room above
      */
+    @Test
     public void testShowPopupBelow() {
         final View topArrow;
         final View bottomArrow;
@@ -122,6 +132,7 @@ public class
      * Test that the popup is shown below the anchor even if there is room above
      * but the showAboveAnchor variable is set
      */
+    @Test
     public void testShowPopupBelowRoomAbove() {
         final View topArrow;
         final View bottomArrow;
@@ -156,6 +167,7 @@ public class
     /**
      * Test that the target arrow can be shown to the left of centre
      */
+    @Test
     public void testShowPopupTargetLeft() {
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTargetOffset(0.25f).build();
@@ -172,6 +184,7 @@ public class
     /**
      * Test that the target arrow can be shown to the right of centre
      */
+    @Test
     public void testShowPopupTargetRight() {
         mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTargetOffset(0.75f).build();
@@ -188,6 +201,7 @@ public class
     /**
      * Test that the popup is removed when the user taps on it
      */
+    @Test
     public void testDismissOnTouch() {
         moveAnchor(getInstrumentation(), mAnchor, 0, 200);
         showCoachMark(getInstrumentation(), mCoachMark);
@@ -220,6 +234,7 @@ public class
      * Test that the position of the popup is updated when the anchor moves and
      * that the correct arrow is visible depending upon the coach mark position
      */
+    @Test
     public void testPopupMovesWhenAnchorMoves() {
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
@@ -254,6 +269,7 @@ public class
     /**
      * Verify that the popup is positioned correctly when a long message is set
      */
+    @Test
     public void testPositionedCorrectlyWithLongMessage() {
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
@@ -283,6 +299,7 @@ public class
     /**
      * Verify that the popup is positioned correctly when an internal anchor is set
      */
+    @Test
     public void testPositionedAboveInternalAnchor() {
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
@@ -312,6 +329,7 @@ public class
      * Verify that the target arrow is applied to the internal anchor rather
      * than the whole view when an internal anchor is specified
      */
+    @Test
     public void testTargetArrowPointsToInternalAnchor() {
         int[] anchorPos = new int[2];
         int[] contentPos = new int[2];
@@ -336,6 +354,7 @@ public class
     /**
      * Verify that coach mark padding is set correctly
      */
+    @Test
     public void testSetPadding() {
         int[] contentPos = new int[2];
         final int screenWidth = getInstrumentation().getTargetContext()

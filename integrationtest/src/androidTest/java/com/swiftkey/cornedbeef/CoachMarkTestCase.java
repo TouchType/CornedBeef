@@ -1,40 +1,48 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import androidx.test.rule.ActivityTestRule;
 
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.swiftkey.cornedbeef.CoachMark.OnDismissListener;
 import static com.swiftkey.cornedbeef.CoachMark.OnShowListener;
 import static com.swiftkey.cornedbeef.CoachMark.OnTimeoutListener;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
+public class CoachMarkTestCase {
     
     private SpamActivity mActivity;
     private CoachMark mCoachMark;
     private View mAnchor;
-    
-    public CoachMarkTestCase() {
-        super(SpamActivity.class);
-    }
-    
-    public void setUp() throws Exception {
-        super.setUp();
+
+    @Rule
+    public ActivityTestRule<SpamActivity> mActivityRule =
+            new ActivityTestRule<>(SpamActivity.class, false, true);
+
+    @Before
+    public void setUp() {
         System.setProperty("dexmaker.dexcache", getInstrumentation().getTargetContext().getCacheDir().getAbsolutePath());
 
-        mActivity = getActivity();
+        mActivity = mActivityRule.getActivity();
         
         getInstrumentation().runOnMainSync(new Runnable() {
             
@@ -51,18 +59,19 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
         
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(mActivity, mAnchor, "spam spam spam").build();
     }
-    
-    public void tearDown() throws Exception {
+
+    @After
+    public void tearDown() {
         dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
         mActivity = null;
-        super.tearDown();
     }
     
     /**
      * Test that the popup is removed when dismiss is called
      */
+    @Test
     public void testDismissMethodCall() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
@@ -76,6 +85,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     /**
      * Test that the popup disappears after the specified timeout has passed
      */
+    @Test
     public void testDismissAfterTimeout() throws InterruptedException {
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").setTimeout(1000).build();
@@ -92,6 +102,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     /**
      * Test that the popup disappears if the anchor is not visible
      */
+    @Test
     public void testDismissWhenAnchorNotVisible() {       
         showCoachMark(getInstrumentation(), mCoachMark);
         
@@ -112,6 +123,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     /**
      * Test that the popup disappears after the anchor view detaches if specified in the builder
      */
+    @Test
     public void testDismissAfterAnchorDetach() throws InterruptedException {
         checkSetDismissOnAnchorDetach(true);
         checkSetDismissOnAnchorDetach(false);
@@ -158,6 +170,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * Verify that onDismiss is called when coach mark is dismissed
      * @throws InterruptedException 
      */
+    @Test
     public void testOnDismissCalled() throws InterruptedException {
         final OnDismissListener mockListener = mock(OnDismissListener.class);
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
@@ -174,6 +187,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * Verify that onTimeout is called when coach mark's timeout expired
      * @throws InterruptedException
      */
+    @Test
     public void testOnTimeoutCalled() throws InterruptedException {
         final long timeout = 50;
         final OnTimeoutListener mockListener = mock(OnTimeoutListener.class);
@@ -196,6 +210,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * and the coach mark dismissed
      * @throws InterruptedException
      */
+    @Test
     public void testOnTimeoutAndOnDismissCalled() throws InterruptedException {
         final long timeout = 50;
         final OnTimeoutListener mockOnTimeoutListener = mock(OnTimeoutListener.class);
@@ -221,6 +236,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * when explicitly dismiss() method called before timeout expired
      * @throws InterruptedException
      */
+    @Test
     public void testOnDismissCalledAndOnTimeoutNotCalled() throws InterruptedException {
         final long timeout = 1000; // Should give the enough time for dismiss
         final OnTimeoutListener mockOnTimeoutListener = mock(OnTimeoutListener.class);
@@ -243,6 +259,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * Verify that onShow is called when coach mark is shown
      * @throws InterruptedException 
      */
+    @Test
     public void testOnShowCalled() throws InterruptedException {
         final OnShowListener mockListener = mock(OnShowListener.class);
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
@@ -259,6 +276,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
      * and the coach mark dismissed
      * @throws InterruptedException
      */
+    @Test
     public void testAllListenerCalled() throws InterruptedException {
         final long timeout = 50;
         final OnShowListener mockOnShowListener = mock(OnShowListener.class);
@@ -285,6 +303,7 @@ public class CoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActi
     /**
      * Test coach mark focusable.
      */
+    @Test
     public void testViewsFocusable() {
         mCoachMark = new TestCoachMark.TestCoachMarkBuilder(
                 mActivity, mAnchor, "spam spam spam").build();

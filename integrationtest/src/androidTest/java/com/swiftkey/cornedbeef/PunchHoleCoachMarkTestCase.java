@@ -3,22 +3,30 @@ package com.swiftkey.cornedbeef;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.test.ActivityInstrumentationTestCase2;
-import android.test.TouchUtils;
-import android.test.ViewAsserts;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.test.rule.ActivityTestRule;
+
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.swiftkey.cornedbeef.PunchHoleCoachMark.POSITION_CONTENT_ABOVE;
 import static com.swiftkey.cornedbeef.PunchHoleCoachMark.POSITION_CONTENT_AUTOMATICALLY;
 import static com.swiftkey.cornedbeef.PunchHoleCoachMark.PunchHoleCoachMarkBuilder;
@@ -26,11 +34,17 @@ import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.moveTargetView;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.waitUntilStatusBarHidden;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
+public class PunchHoleCoachMarkTestCase {
 
     private SpamActivity mActivity;
     private CoachMark mCoachMark;
@@ -47,16 +61,15 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
     private static final int PADDING = 10;
     private final int OVERLAY_COLOR = Color.BLACK;
 
-    public PunchHoleCoachMarkTestCase() {
-        super(SpamActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<SpamActivity> mActivityRule =
+            new ActivityTestRule<>(SpamActivity.class, false, true);
 
-    public void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mActivity = getActivity();
+        mActivity = mActivityRule.getActivity();
 
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -78,7 +91,8 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         mTextView.setTextColor(Color.WHITE); // to make visual debugging easier
     }
 
-    public void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
@@ -87,20 +101,21 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
 
         mMockTargetClickListener = null;
         mMockCoachMarkClickListener = null;
-
-        super.tearDown();
     }
 
+    @Test
     public void testViewsCreatedAndVisible_noAnimation() {
         setupCoachmark(false);
         checkViewsCreatedAndVisible();
     }
 
+    @Test
     public void testViewsCreatedAndVisible_animation() {
         setupCoachmark(true);
         checkViewsCreatedAndVisible();
     }
 
+    @Test
     public void testOverlayCorrectColor() {
         setupCoachmark(false);
         final View container = mCoachMark.getContentView();
@@ -117,24 +132,25 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final View container = mCoachMark.getContentView();
 
         // Check the creation
-        assertNotNull(getActivity());
+        assertNotNull(mActivity);
         assertNotNull(mCoachMark);
         assertNotNull(container);
         assertNotNull(mTextView);
 
         // Check the visibility
-        ViewAsserts.assertOnScreen(container, mTextView);
-        ViewAsserts.assertHorizontalCenterAligned(container, mTextView);
+        assertThat(mTextView, isCompletelyDisplayed());
 
         // Check the resources which passed by builder
         assertEquals(MESSAGE, mTextView.getText().toString());
     }
 
+    @Test
     public void testTargetClick_noAnimation() {
         setupCoachmark(false);
         checkTargetClick();
     }
 
+    @Test
     public void testTargetClick_animation() {
         setupCoachmark(true);
         checkTargetClick();
@@ -149,18 +165,20 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         final View container = mCoachMark.getContentView();
         final View target = container.findViewById(R.id.punch_hole_coach_mark_target);
 
-        TouchUtils.tapView(this, mTargetView);
+        onView(is(mTargetView)).perform(click());
 
         // Touching textview should not propagated to global view.
         verify(mMockTargetClickListener, times(1)).onClick(container);
         verify(mMockCoachMarkClickListener, never()).onClick(container);
     }
 
+    @Test
     public void testCoachMarkClick_noAnimation() {
         setupCoachmark(false);
         checkCoachMarkClick();
     }
 
+    @Test
     public void testCoachMarkClick_animation() {
         setupCoachmark(true);
         checkCoachMarkClick();
@@ -173,7 +191,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
-        TouchUtils.tapView(this, container);
+        onView(is(container)).inRoot(isPlatformPopup()).perform(click());
 
         verify(mMockTargetClickListener, never()).onClick(container);
         verify(mMockCoachMarkClickListener, times(1)).onClick(container);
@@ -181,17 +199,19 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         // Check whether global listener is working on tapping textview(message)
         // The container view should be checked whether it is clicked or not.
         // Because tap event propagated to parent view when target view don't have listener.
-        TouchUtils.tapView(this, mTextView);
+        onView(is((View) mTextView)).inRoot(isPlatformPopup()).perform(click());
 
-        verify(mMockTargetClickListener, never()).onClick(container);
-        verify(mMockCoachMarkClickListener, times(2)).onClick(container);
+        verify(mMockTargetClickListener, never()).onClick(any(View.class));
+        verify(mMockCoachMarkClickListener, times(2)).onClick(any(View.class));
     }
 
+    @Test
     public void testCircleIsOverlayed_noAnimation() {
         setupCoachmark(false);
         checkCircleIsOverlayed(false);
     }
 
+    @Test
     public void testCircleIsOverlayed_animationCannotHappen() {
         setupCoachmark(true);
         // the target view is too small for the animation to happen so we just
@@ -199,6 +219,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
         checkCircleIsOverlayed(false);
     }
 
+    @Test
     public void testCircleIsOverlayed_animationCanHappen() {
         mTargetView = mActivity.findViewById(R.id.coach_mark_test_target_wide);
         setupCoachmark(true);
@@ -214,7 +235,7 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
 
         final PunchHoleView container = (PunchHoleView) mCoachMark.getContentView();
 
-        final float diameterGap = getActivity().getResources()
+        final float diameterGap = mActivity.getResources()
                 .getDimension(R.dimen.punchhole_coach_mark_gap);
 
         // Get the coach mark and target view's coordinates of location on screen
@@ -246,26 +267,31 @@ public class PunchHoleCoachMarkTestCase extends ActivityInstrumentationTestCase2
                 container.setCircle(expectedCircleStartX, expectedCircleStartY, expectedCircleRadius));
     }
 
+    @Test
     public void testMessageLocatedAbove_noAnimation() {
         setupCoachmark(false);
         checkMessageLocatedAbove();
     }
 
+    @Test
     public void testMessageLocatedAbove_animation() {
         setupCoachmark(true);
         checkMessageLocatedAbove();
     }
 
+    @Test
     public void testMessageLocatedBelow_noAnimation() {
         setupCoachmark(false);
         checkMessageLocatedBelow();
     }
 
+    @Test
     public void testMessageLocatedBelow_animation() {
         setupCoachmark(true);
         checkMessageLocatedBelow();
     }
 
+    @Test
     public void testLayoutParamsAreSet() {
         final int contentWidth = 10;
         final int contentHeight = 20;
