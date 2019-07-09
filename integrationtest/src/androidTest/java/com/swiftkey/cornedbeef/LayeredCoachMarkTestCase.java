@@ -1,19 +1,29 @@
 package com.swiftkey.cornedbeef;
 
-import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.test.rule.ActivityTestRule;
+
 import com.swiftkey.cornedbeef.test.R;
 import com.swiftkey.cornedbeef.test.SpamActivity;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.swiftkey.cornedbeef.TestHelper.dismissCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.showCoachMark;
 import static com.swiftkey.cornedbeef.TestHelper.waitUntilStatusBarHidden;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class LayeredCoachMarkTestCase extends ActivityInstrumentationTestCase2<SpamActivity> {
+public class LayeredCoachMarkTestCase {
 
     private SpamActivity mActivity;
     private CoachMark mCoachMark;
@@ -21,14 +31,13 @@ public class LayeredCoachMarkTestCase extends ActivityInstrumentationTestCase2<S
 
     private static final String MESSAGE = "spam spam spam";
 
-    public LayeredCoachMarkTestCase() {
-        super(SpamActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<SpamActivity> mActivityRule =
+            new ActivityTestRule<>(SpamActivity.class, false, true);
 
-    public void setUp() throws Exception {
-        super.setUp();
-
-        mActivity = getActivity();
+    @Before
+    public void setUp() {
+        mActivity = mActivityRule.getActivity();
 
         getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -47,27 +56,27 @@ public class LayeredCoachMarkTestCase extends ActivityInstrumentationTestCase2<S
                 .build();
     }
 
-    public void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         dismissCoachMark(getInstrumentation(), mCoachMark);
         mCoachMark = null;
         mAnchor = null;
         mActivity = null;
-
-        super.tearDown();
     }
 
     /**
      * Test the view creation.
      */
+    @Test
     public void testViewsCreatedAndVisible() {
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
-        final ViewGroup content = (ViewGroup) container.findViewById(R.id.coach_mark_content);
+        final ViewGroup content = container.findViewById(R.id.coach_mark_content);
         TextView tv = (TextView) content.getChildAt(0);
 
         // Check the creation
-        assertNotNull(getActivity());
+        assertNotNull(mActivity);
         assertNotNull(mCoachMark);
         assertNotNull(container);
         assertNotNull(content);

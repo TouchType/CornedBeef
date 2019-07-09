@@ -1,8 +1,9 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.view.View;
+
+import androidx.annotation.LayoutRes;
 
 public abstract class InternallyAnchoredCoachMark extends CoachMark {
 

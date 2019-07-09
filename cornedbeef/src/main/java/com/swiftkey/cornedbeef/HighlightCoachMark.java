@@ -1,11 +1,12 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
+
+import androidx.annotation.LayoutRes;
 
 /**
  * Can be used to highlight part, or all of a given 'anchor' view
