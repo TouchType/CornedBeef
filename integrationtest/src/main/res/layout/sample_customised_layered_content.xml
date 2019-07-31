@@ -26,6 +26,7 @@
         android:layout_marginRight="16dp"
         android:layout_weight="1"
         android:gravity="center"
+        android:textColor="@android:color/white"
         android:textSize="16sp"/>
 
     <Button
@@ -37,7 +38,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="14sp"/>
 
 </LinearLayout>

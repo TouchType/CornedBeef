@@ -9,7 +9,7 @@
         android:id="@+id/top_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/bell_teal"
+        android:tint="@color/default_colour"
         android:scaleType="fitXY"
         android:src="@drawable/ic_pointy_mark_up"
         android:visibility="gone" />
@@ -26,7 +26,7 @@
         android:id="@+id/bottom_arrow"
         android:layout_width="15dp"
         android:layout_height="10dp"
-        android:tint="@color/bell_teal"
+        android:tint="@color/default_colour"
         android:scaleType="fitXY"
         android:src="@drawable/ic_pointy_mark_down" />
 

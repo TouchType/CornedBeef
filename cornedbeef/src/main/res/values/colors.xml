@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bell_teal">#28B8CE</color>
+    <color name="default_colour">#3F67F2</color>
     <color name="transluscent_background">#BF000000</color>
 </resources>
