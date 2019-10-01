@@ -1,13 +1,22 @@
 package com.swiftkey.cornedbeef;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 
 /**
  * {@link BubbleCoachMark}s are displayed as speech bubble with a 'pointy mark'.
@@ -32,9 +41,10 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
 
     private int mMinWidth;
     private int mArrowWidth;
-    private View mTopArrow;
-    private View mBottomArrow;
-    
+    private ImageView mTopArrow;
+    private ImageView mBottomArrow;
+    private ViewGroup mContentHolder;
+
     public BubbleCoachMark(BubbleCoachMarkBuilder builder) {
         super(builder);
         
@@ -42,15 +52,26 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
         mShowBelowAnchor = builder.showBelowAnchor;
         mMinArrowMargin = (int) mContext.getResources()
                 .getDimension(R.dimen.coach_mark_border_radius) + MIN_ARROW_MARGIN;
+
+        // Set the bubble color, if possible. We could change the color in lower APIs but we'd
+        // have to use the support library, increasing the size of the CornedBeef library.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                mTopArrow.setImageTintList(ColorStateList.valueOf(builder.bubbleColor));
+                mBottomArrow.setImageTintList(ColorStateList.valueOf(builder.bubbleColor));
+                ((GradientDrawable) mContentHolder.getBackground().mutate()).setColor(builder.bubbleColor);
+            } catch (Exception e) {
+                Log.e("BubbleCoachMark", "Could not change the coach mark color");
+            }
+        }
     }
     
     @Override
     protected View createContentView(View content) {
         // Inflate the coach mark layout and add the content
         View view = LayoutInflater.from(mContext).inflate(R.layout.bubble_coach_mark, null);
-        LinearLayout contentHolder = (LinearLayout) view
-                .findViewById(R.id.coach_mark_content);
-        contentHolder.addView(content);
+        mContentHolder = view.findViewById(R.id.coach_mark_content);
+        mContentHolder.addView(content);
         
         // Measure the coach mark to get the minimum width (constrained by screen width and padding) 
         final int maxWidth = mContext.getResources()
@@ -62,7 +83,7 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
         mBottomArrow = view.findViewById(R.id.bottom_arrow);
 
         // Ensure that content holder expands to fill the coach mark
-        contentHolder.setLayoutParams(new LinearLayout.LayoutParams(
+        mContentHolder.setLayoutParams(new LinearLayout.LayoutParams(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT,
                 android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -133,19 +154,23 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
     public static class BubbleCoachMarkBuilder extends InternallyAnchoredCoachMarkBuilder {
 
         // Optional parameters with default values
-        protected boolean showBelowAnchor = false;
-        protected float target = 0.5f;
+        boolean showBelowAnchor = false;
+        float target = 0.5f;
+        @ColorInt int bubbleColor;
         
         public BubbleCoachMarkBuilder(Context context, View anchor, String message) {
             super(context, anchor, message);
+            bubbleColor = CoachMarkUtils.resolveColor(context, R.color.default_colour);
         }
 
         public BubbleCoachMarkBuilder(Context context, View anchor, View content) {
             super(context, anchor, content);
+            bubbleColor = CoachMarkUtils.resolveColor(context, R.color.default_colour);
         }
 
         public BubbleCoachMarkBuilder(Context context, View anchor, int contentResId) {
             super(context, anchor, contentResId);
+            bubbleColor = CoachMarkUtils.resolveColor(context, R.color.default_colour);
         }
         
         /**
@@ -168,6 +193,19 @@ public class BubbleCoachMark extends InternallyAnchoredCoachMark {
          */
         public BubbleCoachMarkBuilder setTargetOffset(float target) {
             this.target = target;
+            return this;
+        }
+
+        /**
+         * Set the coach mark's bubble color.
+         * It has no effect if called from APIs lower than Lollipop (21).
+         *
+         * @param bubbleColor
+         *      new bubble color
+         */
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        public BubbleCoachMarkBuilder setBubbleColor(@ColorInt int bubbleColor) {
+            this.bubbleColor = bubbleColor;
             return this;
         }
 

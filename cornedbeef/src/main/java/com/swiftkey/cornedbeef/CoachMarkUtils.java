@@ -1,9 +1,15 @@
 package com.swiftkey.cornedbeef;
 
+import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 
 /**
- * Utils for calculating the size and position of the coach mark popup and pointy mark
+ * Utils for calculating the size and position of the coach mark popup and pointy mark and for
+ * resolving colors.
  * 
  * @author lachie
  */
@@ -96,5 +102,21 @@ public class CoachMarkUtils {
             int arrowWidth, int anchorX, int popupX, int minMargin, int maxMargin) {
         int margin = (int) (target * anchorWidth) - (arrowWidth / 2) + anchorX - popupX;
         return margin < minMargin ? minMargin : (margin > maxMargin ? maxMargin : margin);
+    }
+
+    /**
+     * Resolve the given color resource ID to the int value of the color.
+     *
+     * @param context a context needed to resolve the color
+     * @param colorRes resource ID of the color to resolve
+     * @return the int value of the color with the given resource ID
+     */
+    public static @ColorInt int resolveColor(Context context, @ColorRes int colorRes) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return context.getColor(colorRes);
+        } else {
+            //noinspection deprecation
+            return context.getResources().getColor(colorRes);
+        }
     }
 }

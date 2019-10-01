@@ -4,4 +4,5 @@
     <dimen name="punchhole_coach_mark_gap">2dp</dimen>
     <dimen name="punchhole_coach_mark_horizontal_padding">24dp</dimen>
     <dimen name="punchhole_coach_mark_vertical_padding">20dp</dimen>
+    <dimen name="highlight_coach_mark_stroke_width">2dp</dimen>
 </resources>
