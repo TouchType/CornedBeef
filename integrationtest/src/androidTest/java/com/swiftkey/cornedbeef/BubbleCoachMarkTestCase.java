@@ -1,5 +1,8 @@
 package com.swiftkey.cornedbeef;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -7,8 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.rule.ActivityTestRule;
 
 import com.swiftkey.cornedbeef.test.R;
@@ -376,5 +383,33 @@ public class BubbleCoachMarkTestCase {
 
         assertEquals(paddingInPx, contentPos[0]);
         assertEquals(screenWidth - paddingInPx, contentPos[0] + mCoachMark.getContentView().getWidth());
+    }
+
+    /**
+     * Verify that the coach mark bubble color is set correctly
+     */
+    @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.LOLLIPOP)
+    public void testSetBubbleColor() {
+        final @ColorInt int color = Color.RED;
+        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                "spam spam spam")
+                .setBubbleColor(color)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+        final ImageView topArrow = mCoachMark.getContentView().findViewById(R.id.top_arrow);
+        final ImageView bottomArrow = mCoachMark.getContentView().findViewById(R.id.bottom_arrow);
+        final LinearLayout contentHolder = mCoachMark.getContentView().findViewById(R.id.coach_mark_content);
+        assertEquals(color, topArrow.getImageTintList().getDefaultColor());
+        assertEquals(color, bottomArrow.getImageTintList().getDefaultColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // getColor was added in API 24
+            assertEquals(color, ((GradientDrawable) contentHolder.getBackground()).getColor().getDefaultColor());
+        }
     }
 }
