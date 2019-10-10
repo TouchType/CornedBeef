@@ -1,0 +1,31 @@
+name: $(BuildDefinitionName) $(SourceBranchName) $(Date:yyyy-MM-dd)$(Rev:.rr)
+
+# Triggers are overriden in ADO UI. Run this job manually on ADO. Requires the following
+# variables to be set in UI (when creating a new pipeline from this file)
+# artifactoryUser
+# artifactoryPassword
+# artifactoryRepository
+# artifactoryUrl
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- task: Gradle@2
+  inputs:
+    gradleWrapperFile: 'gradlew'
+    tasks: 'clean assembleRelease artifactoryPublish'
+    options: '
+      --continue 
+      --stacktrace 
+      --no-daemon 
+      -Partifactory_user=$(artifactoryUser)
+      -Partifactory_pass=$(artifactoryPassword)
+      -Partifactory_repo_key=$(artifactoryRepository)
+      -Partifactory_url=$(artifactoryUrl)'
+    publishJUnitResults: false
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: false
+  displayName: 'Publish to $(artifactoryRepository)'
