@@ -1,0 +1,28 @@
+parameters:
+  apiLevel: 28
+  emulatorName: emulator1
+
+steps:
+- script: |
+    echo "y" | $ANDROID_HOME/tools/bin/sdkmanager \
+      --install 'system-images;android-${{ parameters.apiLevel }};google_apis;x86'
+  displayName: 'Install emulator image for API ${{ parameters.apiLevel }}'
+
+- script: |
+    echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd \
+      -n ${{ parameters.emulatorName }} \
+      -k 'system-images;android-${{ parameters.apiLevel }};google_apis;x86' \
+      --force
+    $ANDROID_HOME/emulator/emulator -list-avds
+  displayName: 'Create an emulator for API ${{ parameters.apiLevel }}'
+
+- script: |
+    echo "Starting emulator in background..."
+    nohup $ANDROID_HOME/emulator/emulator -avd ${{ parameters.emulatorName }} -no-snapshot > /dev/null 2>&1 &
+
+    echo "Waiting for emulator to boot up..."
+    $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+
+    $ANDROID_HOME/platform-tools/adb devices
+    echo "Emulator started"
+  displayName: 'Start emulator with API ${{ parameters.apiLevel }}'

@@ -1,0 +1,25 @@
+name: $(BuildDefinitionName) $(SourceBranchName) $(Date:yyyy-MM-dd)$(Rev:.rr)
+
+# This is a public repo so, triggers and CI are overriden and controlled in the ADO UI
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- template: templates/install-and-start-emulator.yml
+  parameters:
+    apiLevel: 23
+
+- task: Gradle@2
+  inputs:
+    gradleWrapperFile: 'gradlew'
+    tasks: 'clean build test connectedAndroidTest'
+    options: '--continue --stacktrace --no-daemon'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    testRunTitle: 'Tests'
+    javaHomeOption: 'JDKVersion'
+    sonarQubeRunAnalysis: false
+  displayName: 'Run all tests'
