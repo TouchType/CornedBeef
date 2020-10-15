@@ -3,6 +3,7 @@ package com.swiftkey.cornedbeef;
 import android.graphics.Color;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.test.rule.ActivityTestRule;
 
@@ -71,11 +72,51 @@ public class HighlightCoachMarkTestCase {
                 "spam spam spam")
                 .setHighlightColor(Color.RED)
                 .setStrokeWidth(20)
+                .setTextColor(Color.RED)
                 .build();
 
         showCoachMark(getInstrumentation(), mCoachMark);
 
         assertTrue(mCoachMark.isShowing());
-        // it is not possible to get information about the stroke so our testing is limited
+        // Note: it is not possible to get information about the stroke so our testing is limited
+        // Note: we're just testing that setting a text color won't provoke a crash because
+        //       highlight coach marks have no text
+    }
+
+    /**
+     * Verify that setting the coach mark text color on a non-text coach mark throws exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testSetTextColorOnNonTextCoachMark() {
+        mCoachMark = new HighlightCoachMark.HighlightCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                new ImageView(mActivity))
+                .setHighlightColor(Color.RED)
+                .setStrokeWidth(20)
+                .setTextColor(Color.RED)
+                .build();
+    }
+
+    /**
+     * Verify that a non-text coach mark is shown correctly
+     */
+    @Test
+    public void testNonTextCoachMark() {
+        final ImageView imageView = new ImageView(mActivity);
+        imageView.setImageResource(R.drawable.ic_pointy_mark_up);
+        mCoachMark = new HighlightCoachMark.HighlightCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                imageView)
+                .setHighlightColor(Color.RED)
+                .setStrokeWidth(20)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+        // Note: we're just testing that this won't provoke a crash because highlight coach marks
+        //       have no content
     }
 }

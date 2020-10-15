@@ -412,4 +412,60 @@ public class BubbleCoachMarkTestCase {
             assertEquals(color, ((GradientDrawable) contentHolder.getBackground()).getColor().getDefaultColor());
         }
     }
+
+    /**
+     * Verify that the coach mark text color is set correctly
+     */
+    @Test
+    public void testSetTextColor() {
+        final @ColorInt int color = Color.RED;
+        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                "spam spam spam")
+                .setTextColor(color)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+
+        final ViewGroup content = mCoachMark.getContentView().findViewById(R.id.coach_mark_content);
+        final TextView tv = (TextView) content.getChildAt(0);
+        assertEquals(color, tv.getCurrentTextColor());
+    }
+
+    /**
+     * Verify that setting the coach mark text color on a non-text coach mark throws exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testSetTextColorOnNonTextCoachMark() {
+        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                new ImageView(mActivity))
+                .setTextColor(Color.RED)
+                .build();
+    }
+
+    /**
+     * Verify that a non-text coach mark is shown correctly
+     */
+    @Test
+    public void testNonTextCoachMark() {
+        final ImageView imageView = new ImageView(mActivity);
+        imageView.setImageResource(R.drawable.ic_pointy_mark_up);
+        mCoachMark = new BubbleCoachMark.BubbleCoachMarkBuilder(
+                mActivity,
+                mAnchor,
+                imageView)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+
+        final ViewGroup content = mCoachMark.getContentView().findViewById(R.id.coach_mark_content);
+        assertTrue(content.getChildAt(0) instanceof ImageView);
+    }
 }

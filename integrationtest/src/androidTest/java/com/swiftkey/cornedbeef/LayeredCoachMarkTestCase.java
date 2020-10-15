@@ -1,10 +1,13 @@
 package com.swiftkey.cornedbeef;
 
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.test.rule.ActivityTestRule;
 
 import com.swiftkey.cornedbeef.test.R;
@@ -51,9 +54,6 @@ public class LayeredCoachMarkTestCase {
         });
         getInstrumentation().waitForIdleSync();
         waitUntilStatusBarHidden(mActivity);
-
-        mCoachMark = new LayeredCoachMark.LayeredCoachMarkBuilder(mActivity, mAnchor, MESSAGE)
-                .build();
     }
 
     @After
@@ -69,6 +69,9 @@ public class LayeredCoachMarkTestCase {
      */
     @Test
     public void testViewsCreatedAndVisible() {
+        mCoachMark = new LayeredCoachMark.LayeredCoachMarkBuilder(mActivity, mAnchor, MESSAGE)
+                .build();
+
         showCoachMark(getInstrumentation(), mCoachMark);
 
         final View container = mCoachMark.getContentView();
@@ -84,5 +87,53 @@ public class LayeredCoachMarkTestCase {
         // Check the visibility
         assertEquals(MESSAGE, tv.getText());
         assertTrue(mCoachMark.isShowing());
+    }
+
+    /**
+     * Test that the coach mark text color is set correctly
+     */
+    @Test
+    public void testSetTextColor() {
+        final @ColorInt int color = Color.RED;
+        mCoachMark = new LayeredCoachMark.LayeredCoachMarkBuilder(mActivity, mAnchor, MESSAGE)
+                .setTextColor(color)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        final TextView tv = (TextView) ((ViewGroup) mCoachMark.getContentView()).getChildAt(0);
+
+        // Check the text, text color and visibility
+        assertTrue(mCoachMark.isShowing());
+        assertEquals(MESSAGE, tv.getText());
+        assertEquals(color, tv.getCurrentTextColor());
+    }
+
+    /**
+     * Verify that setting the coach mark text color on a non-text coach mark throws exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testSetTextColorOnNonTextCoachMark() {
+        mCoachMark = new LayeredCoachMark.LayeredCoachMarkBuilder(mActivity, mAnchor, new ImageView(mActivity))
+                .setTextColor(Color.RED)
+                .build();
+    }
+
+    /**
+     * Verify that a non-text coach mark is shown correctly
+     */
+    @Test
+    public void testNonTextCoachMark() {
+        final ImageView imageView = new ImageView(mActivity);
+        imageView.setImageResource(R.drawable.ic_pointy_mark_up);
+        mCoachMark = new LayeredCoachMark.LayeredCoachMarkBuilder(mActivity, mAnchor, imageView)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+
+        final ViewGroup content = mCoachMark.getContentView().findViewById(R.id.coach_mark_content);
+        assertTrue(content.getChildAt(0) instanceof ImageView);
     }
 }
