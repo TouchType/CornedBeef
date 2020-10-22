@@ -16,6 +16,7 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
@@ -481,6 +482,21 @@ public abstract class CoachMark {
         public CoachMarkBuilder setDismissOnAnchorDetach(boolean shouldDismissOnAnchorDetach) {
             this.shouldDismissOnAnchorDetach = shouldDismissOnAnchorDetach;
             return this;
+        }
+
+        /**
+         * Set the coach mark's text color.
+         *
+         * @param textColor new text color
+         */
+        public CoachMarkBuilder setTextColor(@ColorInt int textColor) {
+            if (this.content instanceof TextView) {
+                ((TextView) this.content).setTextColor(textColor);
+                return this;
+            } else {
+                throw new IllegalStateException(
+                        "Can't set a text color in a CoachMark whose content is not a TextView");
+            }
         }
 
         public abstract CoachMark build();

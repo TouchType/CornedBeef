@@ -36,7 +36,9 @@ public final class TestHelper {
         instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                coachMark.dismiss();
+                if (coachMark != null) {
+                    coachMark.dismiss();
+                }
             }
         });
         instrumentation.waitForIdleSync();

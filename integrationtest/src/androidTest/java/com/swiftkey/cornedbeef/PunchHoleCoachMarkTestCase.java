@@ -6,9 +6,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.test.rule.ActivityTestRule;
 
 import com.swiftkey.cornedbeef.test.R;
@@ -39,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -304,6 +308,71 @@ public class PunchHoleCoachMarkTestCase {
 
         assertEquals(contentWidth, mTextView.getLayoutParams().width);
         assertEquals(contentHeight, mTextView.getLayoutParams().height);
+    }
+
+    /**
+     * Test that the coach mark text color is set correctly
+     */
+    @Test
+    public void testSetTextColor() {
+        final @ColorInt int color = Color.RED;
+
+        mCoachMark = new PunchHoleCoachMarkBuilder(mActivity, mAnchor, mTextView)
+                .setTargetView(mTargetView)
+                .setHorizontalTranslationDuration(1000)
+                .setOnTargetClickListener(mMockTargetClickListener)
+                .setOnGlobalClickListener(mMockCoachMarkClickListener)
+                .setOverlayColor(OVERLAY_COLOR)
+                .setContentLayoutParams(MATCH_PARENT, MATCH_PARENT, POSITION_CONTENT_AUTOMATICALLY)
+                .setPunchHolePadding(PADDING)
+                .setTextColor(color)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertEquals(color, mTextView.getCurrentTextColor());
+    }
+
+    /**
+     * Verify that setting the coach mark text color on a non-text coach mark throws exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testSetTextColorOnNonTextCoachMark() {
+        mCoachMark = new PunchHoleCoachMarkBuilder(mActivity, mAnchor, new ImageView(mActivity))
+                .setTargetView(mTargetView)
+                .setHorizontalTranslationDuration(1000)
+                .setOnTargetClickListener(mMockTargetClickListener)
+                .setOnGlobalClickListener(mMockCoachMarkClickListener)
+                .setOverlayColor(OVERLAY_COLOR)
+                .setContentLayoutParams(MATCH_PARENT, MATCH_PARENT, POSITION_CONTENT_AUTOMATICALLY)
+                .setPunchHolePadding(PADDING)
+                .setTextColor(Color.RED)
+                .build();
+    }
+
+    /**
+     * Verify that a non-text coach mark is shown correctly
+     */
+    @Test
+    public void testNonTextCoachMark() {
+        final ImageView imageView = new ImageView(mActivity);
+        imageView.setImageResource(R.drawable.ic_pointy_mark_up);
+        mCoachMark = new PunchHoleCoachMarkBuilder(mActivity, mAnchor, imageView)
+                .setTargetView(mTargetView)
+                .setHorizontalTranslationDuration(1000)
+                .setOnTargetClickListener(mMockTargetClickListener)
+                .setOnGlobalClickListener(mMockCoachMarkClickListener)
+                .setOverlayColor(OVERLAY_COLOR)
+                .setContentLayoutParams(MATCH_PARENT, MATCH_PARENT, POSITION_CONTENT_AUTOMATICALLY)
+                .setPunchHolePadding(PADDING)
+                .build();
+
+        showCoachMark(getInstrumentation(), mCoachMark);
+
+        assertTrue(mCoachMark.isShowing());
+
+        final ViewGroup content = (ViewGroup) mCoachMark.getContentView();
+        assertTrue(content.getChildAt(0) instanceof ImageView);
     }
 
     /**
