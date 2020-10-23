@@ -1,8 +1,10 @@
 <resources>
     <!-- Coach mark -->
-    <dimen name="coach_mark_border_radius">5dp</dimen>
+    <dimen name="coach_mark_border_radius">4dp</dimen>
     <dimen name="punchhole_coach_mark_gap">2dp</dimen>
     <dimen name="punchhole_coach_mark_horizontal_padding">24dp</dimen>
     <dimen name="punchhole_coach_mark_vertical_padding">20dp</dimen>
     <dimen name="highlight_coach_mark_stroke_width">2dp</dimen>
+    <dimen name="bubble_coach_mark_vertical_padding">8dp</dimen>
+    <dimen name="bubble_coach_mark_horizontal_padding">12dp</dimen>
 </resources>
