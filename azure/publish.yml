@@ -2,10 +2,8 @@ name: $(BuildDefinitionName) $(SourceBranchName) $(Date:yyyy-MM-dd)$(Rev:.rr)
 
 # Triggers are overriden in ADO UI. Run this job manually on ADO. Requires the following
 # variables to be set in UI (when creating a new pipeline from this file)
-# artifactoryUser
-# artifactoryPassword
-# artifactoryRepository
-# artifactoryUrl
+# publishUser
+# publishUrl
 trigger: none
 pr: none
 
@@ -16,16 +14,15 @@ steps:
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
-    tasks: 'clean assembleRelease artifactoryPublish'
+    tasks: 'clean assembleRelease publish'
     options: '
       --continue 
       --stacktrace 
       --no-daemon 
-      -Partifactory_user=$(artifactoryUser)
-      -Partifactory_pass=$(artifactoryPassword)
-      -Partifactory_repo_key=$(artifactoryRepository)
-      -Partifactory_url=$(artifactoryUrl)'
+      -Ppublish_user=$(publishUser)
+      -Ppublish_pass=$(System.AccessToken)
+      -Ppublish_url=$(publishUrl)'
     publishJUnitResults: false
     javaHomeOption: 'JDKVersion'
     sonarQubeRunAnalysis: false
-  displayName: 'Publish to $(artifactoryRepository)'
+  displayName: 'Publish to artifact feed'

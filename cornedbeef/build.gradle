@@ -1,5 +1,4 @@
 plugins {
-    id "com.jfrog.artifactory" version "4.9.8"
     id "maven-publish"
 }
 
@@ -30,39 +29,29 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.28.2'
 }
 
-publishing.publications {
-    aar(MavenPublication) {
-        groupId "TouchType"
-        version = android.defaultConfig.versionName
-        artifactId project.getName()
+publishing {
+    repositories {
 
-        // Tell maven to prepare the generated "*.aar" file for publishing
-        artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-    }
-}
+        def user=project.properties['publish_user'] ?: "admin"
+        def pass=project.properties['publish_pass'] ?: "password"
+        def url=project.properties['publish_url'] ?: "http://localhost:8081"
 
-artifactory {
-
-    // artifactory properties with local defaults
-    def user=project.properties['artifactory_user'] ?: "admin"
-    def pass=project.properties['artifactory_pass'] ?: "password"
-    def key=project.properties['artifactory_repo_key'] ?: "libs-release-local"
-    def url=project.properties['artifactory_url'] ?: "http://localhost:8081/artifactory"
-
-    contextUrl = url
-    publish {
-        repository {
-            // The Artifactory repository key to publish to
-            repoKey = key
-            username = user
-            password = pass
+        maven {
+            setUrl(url)
+            credentials {
+                username = user
+                password = pass
+            }
         }
-        defaults {
-            // Tell the Artifactory Plugin which artifacts should be published to Artifactory.
-            publications('aar')
-            publishArtifacts = true
+    }
+
+    publications {
+        aar(MavenPublication) {
+            groupId "TouchType"
+            version = android.defaultConfig.versionName
+            artifactId project.getName()
+
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
         }
     }
 }
-
-
